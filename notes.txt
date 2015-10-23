@@ -1,0 +1,52 @@
+(Pl vs. 1) * ants
+
+Plant als Hauptcharakter
+    mit Gesicht + Gesichtsausdrücken und Sinus-Rotation
+    Prozedurale Animation im Wind
+    
+Building: 
+    Wurzeln
+    Dornen
+        Damage beim durchgehen
+    fleischfr. Pflanzen
+    Spinnen
+        Blätter zu Blättern mit "spider wanted" ausbauen. Nur Blätter aus der unteren Ebene, die dannn Netze zum Boden hin spannen
+        Zufällig generierte Güte
+    Pheromone
+    Symbiose mit Pilzen
+        Mineralien-Boost von Toten Ameisen
+        Die stehen da die ganze Zeit, irgendwann kann man mit denen interagieren undn en Vertrag unterschreiben
+    eventuell Vögel
+    giftige Blätter
+    weitere Äste 
+    
+Andere Abilites:
+    Spinne feuern -> geht mit Koffer und Hut
+    Schütteln
+        Schüttelt Ameisen ab -> Fallschaden + Verwirrung
+        Synergy mit Dornen
+    
+Gegner:
+    Ants
+    Raupen
+        Tanks
+    Heuschrecken (Elite)
+    
+Ressourcen (abhängig vom Wetter, vllt. auch Tag + Nacht):
+    Glucose: von Sonne, "Holz", von Blättern
+    H20: von Regen, von Wurzeln
+    Mineralien: Bedeckt, "Mindpower" (alles was Bewusstsein vorraussetzt)
+    
+Random Notes:
+    Ganz am Anfang explored man die mechanics ohne Gegner, die erst später dazu kommen.
+    Begrenzte Anzahl Baupunkte
+    Alle Sachen haben Vorteile und Nachteile
+    Dinge bewusst abfaulen lassen
+    Zombie-Modus zum Freischalten (als Achievement), einfach alles blau tinten und rote Augen
+    
+Intro:
+    * Man sieht nur den unteren Teil der Pflanze und man hört nur die Drums, "<Start>" blinkt
+    * Wenn man Start drückt, fährt die Kamera zur tanzenden Blüte der Pflanze und man hört den ganzen Bossanova
+    * 
+    Große starke pflanze
+    Man drückt Start -> Fuß zermatscht die und ein kleiner Stümmel bleibt übrig aus dem eine Knospe wächst. Das einzige was man machen kann ist diese Knospe drücken, sodass die auf geht.
