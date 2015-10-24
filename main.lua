@@ -4,6 +4,7 @@ require "camera"
 require "knobs"
 require "textWidgets"
 require "level"
+require "moveGraph"
 require "states.game"
 lush = require "lush"
 
