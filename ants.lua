@@ -96,15 +96,17 @@ do
 						end
 					end
 				else
+					-- Affect leaf
+					local leafGone = false -- or leaf already gone, stored in some value?
+					-- ...
+					-- something someting leafGone = true
 					-- Eating update
 					ant.eatingTimeRemaining = ant.eatingTimeRemaining - simulationDt
-					if ant.eatingTimeRemaining <= 0.0 then
+					if ant.eatingTimeRemaining <= 0.0 or leafGone then
 						ant.eating = false
 						ant.goingHome = true
 						ant.inertia = 0.97
 					end
-					-- Affect leaf
-					-- ...
 				end
 			else
 				-- Fall Gravity
