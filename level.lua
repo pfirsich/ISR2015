@@ -75,13 +75,14 @@ do
         -- Move Graph for Ants and stuff
         moveGraph.clear()
         local prev = moveGraph.append(groundSurfacePoints[1], groundSurfacePoints[2])
+        level.leftEntryPoint = prev
         for i = 2,groundSegments do
             prev = moveGraph.append(groundSurfacePoints[2*i-1], groundSurfacePoints[2*i], prev)
         end
+        level.rightEntryPoint = prev
         level.plantAttachementPoint = math.floor(groundSegments/2+0.5)
         level.plantAttachementPosition = {groundSurfacePoints[2*level.plantAttachementPoint-1], 
             groundSurfacePoints[2*level.plantAttachementPoint]}
-
 
         camera.setBounds(-w/2,-1000,w/2,700)
 
