@@ -20,19 +20,20 @@ do
 		textWidgets.height = textWidgets.image:getHeight()
 		-- Branch [color:255,0,0,textWidgets.alpha]This is red text.[n][color:255,255,255,textWidgets.alpha]In a new line, I include an inside the text
 		textWidgets.list["createBranch"] = {caption = "Create Branch", cost = {5,5,0},
-			text="Add a new branch to your plant which will grow eventually and provide more grow spots."}
+			text="Add a new branch to your plant which will grow eventually and provide more leaf growth spots."}
 		textWidgets.list["createLeaf"] = {caption = "Create Leaf", cost = {3,3,0},
 			text="Add a leaf to your plant which will generate valuable glucose"}
 		textWidgets.list["upgradePoisonLeaf"] = {caption = "Create Poisoned Leaf", cost = {3,6,2},
 			text="Grow a poisonous leaf that will hurt any foes eating from it. Will generate fewer glucose"}
 		textWidgets.list["upgradeSpiderLeaf"] = {caption = "Call for Spider", cost = {2,2,6},
-			text="Grows a leaf that attracks spiders due to its amazing web supporting capabilities. Will generate fewer glucose"}
+			text="Grows a leaf that attracks spiders due to its amazing web supporting capabilities. Will generate fewer glucose."}
 		textWidgets.list["dance"] = {caption = "Shake it off", cost = {2,2,4},
-			text="Shake yourself in order to get rid of any unwanted guests"}
+			text="Shake yourself in order to get rid of any unwanted guests."}
 		textWidgets.list["strikeRoots"] = {caption = "Enhance Roots", cost = {4,6,0},
-			text="Improve the efficiency of your root system to gain more valuable water"}
-		textWidgets.list["spawnThorns"] = {caption = "Create Thorns", cost = {8,8,2},
-			text="Grows powerful thornes that damage any approaching foes"}
+			text="Strike further roots to gain more water at the cost of glucose collection."}
+		textWidgets.list["spawnThorns"] = {caption = "Grow Thorns", cost = {8,8,2},
+			text="Grows thornes that damage insects on contact"}
+		textWidgets.list["openBud"] = {caption = "Rebuild Yourself", cost = {0, 0, 0}, text = "Open your bud and start anew."}
 		-- Complete list
 		for k, v in pairs(textWidgets.list) do
 			v.x = 0

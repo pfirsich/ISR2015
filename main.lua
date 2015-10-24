@@ -7,6 +7,7 @@ require "level"
 require "moveGraph"
 require "states.game"
 require "plant"
+require "face"
 lush = require "lush"
 
 currentState = {} -- empty state, does nothing

@@ -27,7 +27,8 @@ do
 		knobs.prepareElements(content)
 		-- check mouse interaction
 		local self = knobs.list[id]
-		if knobs.mouseInSphere(x, y, knobs.list[id].hovered and 60 or 32) then
+		if knobs.mouseInSphere(x, y, knobs.list[id].hovered and 50 or 15) then
+			if not self.hovered then lush.play("hover.wav") end
 			self.hovered = true
 		else
 			self.hovered = false
