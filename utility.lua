@@ -35,6 +35,15 @@ function clamp(v, lo, hi)
     return math.max(math.min(v, hi), lo)
 end
 
+function lerp(a, b, t)
+	return a + (b - a) * t
+end 
+
+function bezier(a, b, va, vb, t)
+    local invT = 1.0 - t 
+    return a * invT*invT*invT + va * 3.0 * invT*invT*t + vb * 3.0 * invT*t*t + b * t*t*t
+end 
+
 function intervalsOverlap(A, B) -- interval: {left, right}
 	-- they dont overlap if left_B > right_A or right_B < left_A
 	-- negate: left_B <= right_A and right_B >= left_A

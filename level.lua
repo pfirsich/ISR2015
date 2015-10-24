@@ -26,15 +26,12 @@ do
         grassFanImage:setWrap("repeat", "clamp")
         groundTexture = love.graphics.newImage("images/ground2.png")
         groundTexture:setWrap("repeat", "repeat")
-
-        antSprite = love.graphics.newImage("images/ant.bmp")
     end
 
     function level.draw()
         love.graphics.draw(groundMesh, 0, 0)
         love.graphics.draw(groundFanMesh, 0, 0)
         love.graphics.draw(grassFanMesh, 0, 0)
-        love.graphics.draw(antSprite, 160,300, 0, 0.3,0.3)
     end
 
     function level.generate()
@@ -62,7 +59,7 @@ do
         groundMesh = love.graphics.newMesh(vertices, groundTexture, "triangles")
         
         local groundFanVertices = buildFanGeometry(groundSurfacePoints, groundFanOffset, groundFanHeight)
-        for i = 1, #groundFanVertices do groundFanVertices[i][3] = groundFanVertices[i][3] / groundFanImage:getWidth() * groundFanTextureScale end
+        for i = 1, #groundFanVertices do groundFanVertices[i][3] = groundFanVertices[i][3] / groundFanImage:getWidth() * groundFanTextureScale + 0.2 end
         groundFanMesh = love.graphics.newMesh(groundFanVertices, groundFanImage, "triangles")
 
         local edgeMask = {}
@@ -80,9 +77,9 @@ do
             prev = moveGraph.append(groundSurfacePoints[2*i-1], groundSurfacePoints[2*i], prev)
         end
         level.rightEntryPoint = prev
-        level.plantAttachementPoint = math.floor(groundSegments/2+0.5)
-        level.plantAttachementPosition = {groundSurfacePoints[2*level.plantAttachementPoint-1], 
-            groundSurfacePoints[2*level.plantAttachementPoint]}
+        level.plantAttachmentPoint = math.floor(groundSegments/2+0.5)
+        level.plantAttachmentPosition = {groundSurfacePoints[2*level.plantAttachmentPoint-1], 
+            groundSurfacePoints[2*level.plantAttachmentPoint]}
 
         camera.setBounds(-w/2,-1000,w/2,700)
 
@@ -126,7 +123,7 @@ do
             local dif = (i-nodemid)/plantHoleSegments
             local off = math.pow(2.0, -16*dif*dif) - 0.1
             if off > 0 then
-                list[2*i] = list[2*i] + scaley*0.02*off
+                list[2*i] = list[2*i] - scaley*0.11*off
             end
         end
 

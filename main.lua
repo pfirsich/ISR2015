@@ -6,6 +6,7 @@ require "textWidgets"
 require "level"
 require "moveGraph"
 require "states.game"
+require "plant"
 lush = require "lush"
 
 currentState = {} -- empty state, does nothing
@@ -41,11 +42,6 @@ function love.update(dt)
 
     currentState.time = (currentState.time or 0) + simulationDt
     if currentState.update then currentState.update() end
-
-    -- Camera Movement
-    camera.control(simulationDt, 1000)
-    --
-    knobs.update(simulationDt)
 end
 
 function love.textinput(text)
@@ -115,7 +111,3 @@ function love.run()
         if love.timer then love.timer.sleep(0.001) end
     end
 end
-
-
-
-function clamp(v, min, max) return (v < min) and min or ((v > max) and max or v) end

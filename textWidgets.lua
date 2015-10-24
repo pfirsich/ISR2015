@@ -9,15 +9,16 @@ do
 	}
 
 	resourceInfo = {
-		{name = "H2O", icon = nil, color = {80,120,255}},
-		{name = "Glucose", icon = nil, color = {240,230,22}},
-		{name = "Minerals", icon = nil, color = {160,110,32}},
+		{name = "H2O", icon = love.graphics.newImage("images/UI/h2oicon.png"), color = {80,120,255}},
+		{name = "Glucose", icon = love.graphics.newImage("images/UI/glucoseicon.png"), color = {240,230,22}},
+		{name = "Minerals", icon = love.graphics.newImage("images/UI/mineralsicon.png"), color = {160,110,32}},
 	}
 
 	function textWidgets.load()
-		textWidgets.image = love.graphics.newImage("images/messagebox.bmp")
-		textWidgets.width = textWidgets.image:getWidth()
-		textWidgets.height = textWidgets.image:getHeight()
+		textWidgets.image = love.graphics.newImage("images/UI/Textbox.png")
+		textWidgets.imageScale = 0.5
+		textWidgets.width = textWidgets.imageScale * textWidgets.image:getWidth()
+		textWidgets.height = textWidgets.imageScale * textWidgets.image:getHeight()
 		-- Branch [color:255,0,0,textWidgets.alpha]This is red text.[n][color:255,255,255,textWidgets.alpha]In a new line, I include an inside the text
 		textWidgets.list[1] = {caption = "Create Branch", cost = {5,5,0},
 			text="Add a new branch to your plant which will grow eventually and provide more grow spots."}
@@ -57,7 +58,9 @@ do
 				textWidgets.alpha = alpha
 				love.graphics.setColor(255,255,255,alpha)
 				-- Background
-				love.graphics.draw(textWidgets.image, widget.x, widget.y, 0, 1,1, textWidgets.image:getWidth()/2, textWidgets.image:getHeight()/2)
+				love.graphics.setColor(120,200,120,255)
+				love.graphics.draw(textWidgets.image, widget.x, widget.y, 0, textWidgets.imageScale, textWidgets.imageScale, textWidgets.image:getWidth()/2, textWidgets.image:getHeight()/2)
+				love.graphics.setColor(255,255,255,255)
 				local x1 = widget.x - textWidgets.width/2
 				local y1 = widget.y - textWidgets.height/2
 				local x2 = x1 + textWidgets.width
@@ -67,24 +70,23 @@ do
 				-- Text
 				printf(widget.text, x1+margin, y1+margin+24, x2-x1-2*margin, "left", y2-y1-3*margin, "top")
 				-- Resources
-				local x = x1+margin+12
 				local y = y2-margin-12
+				local pos = 0
 				for i = 1,3 do
 					if widget.cost[i] > 0 then
+						pos = pos + 1
+						local x = x1 + textWidgets.width*(pos-0.5)/3.0
 						-- Draw
 						resourceInfo[i].color[4] = alpha
-						if resourceInfo[i].image then
-							love.graphics.draw(resourceInfo[i].image, x, y+4)
+						if resourceInfo[i].icon then
+							love.graphics.draw(resourceInfo[i].icon, x-16, y+4, 0, 0.7,0.7, 32,32)
 							love.graphics.setColor(resourceInfo[i].color)
-							love.graphis.print(widget.cost[i], x+24, y)
 						else
 							love.graphics.setColor(resourceInfo[i].color)
-							love.graphics.circle("fill", x, y+4,14)
-							love.graphics.print(widget.cost[i], x+24, y)
+							love.graphics.circle("fill", x-16, y+4,14)
 						end
+						love.graphics.print(widget.cost[i], x+16, y, 0, 1.5, 1.5)
 						love.graphics.setColor(255,255,255,alpha)
-						-- Proceed
-						x = x + 80
 					end
 				end
 				-- Hide it
