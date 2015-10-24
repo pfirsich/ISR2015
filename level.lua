@@ -9,29 +9,32 @@ do
     local levelHeightFactor = 1500
     local groundSegments = 120
     groundHeight = 700
-    local textureScale = 2.0
+    local textureScale = 1.5
     local groundVariance = 30
     local textureOffsetX, textureOffsetY = 0, 0
-    local groundFanOffset, groundFanHeight = 0, 50
+    local groundFanOffset, groundFanHeight = -50, 250
     local groundFanTextureScale = 1.0
-    local grassFanOffset, grassFanHeight = 20, 40
+    local grassFanOffset, grassFanHeight = 0, 40
     local grassFanTextureScale = 5.0
-    local grassProb = 0.5
+    local grassProb = 0.0
 
 
     function level.load()
-        groundFanImage = love.graphics.newImage("images/blood.png")
+        groundFanImage = love.graphics.newImage("images/fan.png")
         groundFanImage:setWrap("repeat", "clamp")
         grassFanImage = love.graphics.newImage("images/fan.png")
         grassFanImage:setWrap("repeat", "clamp")
         groundTexture = love.graphics.newImage("images/ground2.png")
         groundTexture:setWrap("repeat", "repeat")
+
+        antSprite = love.graphics.newImage("images/ant.bmp")
     end
 
     function level.draw()
         love.graphics.draw(groundMesh, 0, 0)
         love.graphics.draw(groundFanMesh, 0, 0)
         love.graphics.draw(grassFanMesh, 0, 0)
+        love.graphics.draw(antSprite, 160,300, 0, 0.3,0.3)
     end
 
     function level.generate()
@@ -69,7 +72,7 @@ do
         grassFanMesh = love.graphics.newMesh(grassFanVertices, grassFanImage, "triangles")
 
 
-        camera.setBounds(-w/2,-1000,w/2,500)
+        camera.setBounds(-w/2,-1000,w/2,700)
 
     end
 

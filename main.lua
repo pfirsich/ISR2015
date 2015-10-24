@@ -16,6 +16,7 @@ end
 
 function love.load()
 	lush.setPath("media/sounds/")
+    textWidgets.load()
     if gameState.load then gameState.load() end
     enterState(gameState)
 
@@ -24,16 +25,14 @@ function love.load()
     camera.setBounds(-1500,-700,nil,500)
     level.generate()
 
+    camera.setScale(1.0)
+
 end
 
 
 frames  = 0
 function love.update(dt)
     if dt then simulationDt = dt end
-
-    frames = frames + 1
-    if frames%100==0 then print(frames) end
-    for i = 1,50 do print("Hello World") end
 
     updateDelayedCalls()
     updateWatchedInputs()
@@ -53,7 +52,6 @@ function love.textinput(text)
 end
 
 function love.draw()
-    love.graphics.setColor(255, 255, 255, 255)
     if currentState.draw then currentState.draw() end
 end
 
@@ -116,3 +114,7 @@ function love.run()
         if love.timer then love.timer.sleep(0.001) end
     end
 end
+
+
+
+function clamp(v, min, max) return (v < min) and min or ((v > max) and max or v) end

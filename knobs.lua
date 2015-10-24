@@ -47,10 +47,11 @@ do
 			local rad = knobs.radPresets[#content]*size/2
 			local dis = size - rad
 			local sizeScale = (knobs.radPresets[#content]*size/2)/32
-			local timeOff = -knobs.time*knobs.timePresets[#content]
+			local timeOff = -knobs.time*knobs.timePresets[#content]*0.0 + 0.1*math.sin(knobs.time*0.8)
 			love.graphics.setColor(255,255,255,255*p)
 			for i = 1,#content do
-				local angle = i*2*math.pi/#content + timeOff*0.1
+				local baseAngle = i*2*math.pi/#content + math.pi
+				local angle = baseAngle + timeOff
 				local cx = x + dis*math.sin(angle)
 				local cy = y + dis*math.cos(angle)
 				local alpha = 255*p*(0.5 + 0.5*content[i].highlight)
@@ -65,7 +66,9 @@ do
 				if knobs.mouseInSphere(cx, cy, rad) then
 					if p >= 1 then
 						content[i].highlight = clamp(content[i].highlight + knobs.dt*3.5, 0, 1)
-						if content[i].textWidget then textWidgets.show(content[i].textWidget) end
+						if content[i].textWidget then 
+							textWidgets.show(content[i].textWidget, x + dis*math.sin(baseAngle), y + dis*math.cos(baseAngle)-150) 
+						end
 					end
 					if knobs.mouse.leftclick == 2 and content[i].clickCallback then content[i].clickCallback() end
 				else

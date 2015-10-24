@@ -28,7 +28,7 @@ do
 	end
 
 	function camera.setScale(scale)
-		camera.scale = scale or camera.scale
+		camera.scale = (scale or camera.scale) * (love.window.getHeight()/800)
 		camera.viewSize = {love.window.getWidth()/camera.scale, love.window.getHeight()/camera.scale}
 		camera.centerFrame[1] = camera.outerFrame[1] + camera.viewSize[1]/2
 		camera.centerFrame[2] = camera.outerFrame[2] + camera.viewSize[2]/2
@@ -38,7 +38,19 @@ do
 		camera.freeMoveBounds[2] = camera.centerFrame[2] + camera.dampedMovementWidth
 		camera.freeMoveBounds[3] = camera.centerFrame[3] - camera.dampedMovementWidth
 		camera.freeMoveBounds[4] = camera.centerFrame[4] - camera.dampedMovementWidth
+		print("View Size")
+		print(camera.viewSize[1], camera.viewSize[2], camera.scale, love.window.getWidth(), love.window.getHeight())
+		print("Outer Frame")
+		local tmp = camera.outerFrame
+		print(tmp[1], tmp[2], tmp[3], tmp[4])
+		print("Center Frame")
+		local tmp = camera.centerFrame
+		print(tmp[1], tmp[2], tmp[3], tmp[4])
+		print("Free Bounds")
+		local tmp = camera.freeMoveBounds
+		print(tmp[1], tmp[2], tmp[3], tmp[4])
 		camera.updateCurrentFrame()
+		print()
 	end
 
 	function camera.move(dx, dy)
@@ -94,7 +106,6 @@ do
 	end
 
 
-	function clamp(v, min, max) return (v < min) and min or ((v > max) and max or v) end
 
 
     function camera.control(dt, speed)
