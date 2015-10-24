@@ -1,0 +1,42 @@
+Leaf-Physics
+-> Integrieren
+
+Lukas:
+Brocken: 3000 x 100 px, 2/3 Scale, Dreck nach unten verschieben
+Messagebox-Hintergrund
+Ameise: 50 px hoch + Geh-Animation + Fress-Animation + verschiedene Faces
+Das gleiche für Raupe, vllt. für Grasshopper
+Backgrounds (2 Layers)
+Spinne: 
+    Kokon
+    Netz
+    Einmal von oben + Gehen
+    Einmal von der Seite + Gehn
+Blätter x 2
+Giftige Blättern
+Dornen
+Blätter mit Spinnen-Schild
+Pilze x 2 
+Icons für die Abilities
+Regentropfen
+Icons für H20, Mineralien, Glucose
+Schuh
+Planzenköpfe x 3 oder x 4
+
+Joel:
+Face <- FICK DAS GESICHT
+Leaf-Physics
+Integration
+    Interaction-Points spawnen und Funktionen aufrufen
+    Blätter erstellen, Äste erstellen (+ Animation vllt.)
+Abfaul-Shader / Fress-Shader
+Intro
+Wurzeln
+Musik
+Sound
+Normal-Mapping, God-Rays
+Blätter streicheln
+
+Markus:
+Messageboxen + superprintf
+Camera-Debug
