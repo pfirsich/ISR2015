@@ -19,21 +19,33 @@ function love.load()
     if gameState.load then gameState.load() end
     enterState(gameState)
 
+    level.load()
     camera.load()
     camera.setBounds(-1500,-700,nil,500)
+    level.generate()
 
 end
 
-function love.update()
+
+frames  = 0
+function love.update(dt)
+    if dt then simulationDt = dt end
+
+    frames = frames + 1
+    if frames%100==0 then print(frames) end
+    for i = 1,50 do print("Hello World") end
+
     updateDelayedCalls()
     updateWatchedInputs()
+
 
     currentState.time = (currentState.time or 0) + simulationDt
     if currentState.update then currentState.update() end
 
     -- Camera Movement
     camera.control(simulationDt, 1000)
-    knobs.update(dt)
+    --
+    knobs.update(simulationDt)
 end
 
 function love.textinput(text)
@@ -64,7 +76,7 @@ function love.run()
     end
 
     simulationTime = love.timer.getTime()
-    simulationDt = 1.0/40.0
+    simulationDt = 1.0/120.0
 
     if love.load then love.load(arg) end
 
