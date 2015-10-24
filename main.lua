@@ -1,6 +1,9 @@
 require "utility"
 require "inputs"
 require "camera"
+require "knobs"
+require "textWidgets"
+require "level"
 require "states.game"
 lush = require "lush"
 
@@ -15,6 +18,10 @@ function love.load()
 	lush.setPath("media/sounds/")
     if gameState.load then gameState.load() end
     enterState(gameState)
+
+    camera.load()
+    camera.setBounds(-1500,-700,nil,500)
+
 end
 
 function love.update()
@@ -23,6 +30,10 @@ function love.update()
 
     currentState.time = (currentState.time or 0) + simulationDt
     if currentState.update then currentState.update() end
+
+    -- Camera Movement
+    camera.control(simulationDt, 1000)
+    knobs.update(dt)
 end
 
 function love.textinput(text)
