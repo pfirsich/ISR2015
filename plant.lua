@@ -480,15 +480,15 @@ function plant.appendToGraph()
     -- Stem
     local prev = level.plantAttachmentNode
     for i = 2, #plant.stem do
-        prev = moveGraph.append(0,0, prev, 20, "plant")
+        prev = moveGraph.append(0,0, prev, 100, "plant")
         -- Branches
         plant.stem[i].graphNode = prev
         local bprev = prev
         for j = 1, #plant.branches[i] do
-            bprev = moveGraph.append(0,0, bprev, 40, "plant")
+            bprev = moveGraph.append(0,0, bprev, 200, "plant")
             plant.branches[i][j].graphNode = bprev
             if plant.branches[i][j].leaf then
-                plant.branches[i][j].leaf.graphNode = moveGraph.append(plant.branches[i][j]._x, plant.branches[i][j]._y+50, bprev, 80, "leaf")
+                plant.branches[i][j].leaf.graphNode = moveGraph.append(plant.branches[i][j]._x, plant.branches[i][j]._y+50, bprev, 500, "leaf")
             end
         end
     end
@@ -498,16 +498,20 @@ end
 function plant.updateGraph()
     -- Stem
     for i = 2, #plant.stem do
+        if not plant.stem[i].graphNode then plan.stem[i].graphNode = moveGraph.append(0,0, plant.stem[i-1].graphNode, 100, "plant") end
         plant.stem[i].graphNode.x = level.plantAttachmentPosition[1] + plant.stem[i]._x + 25
         plant.stem[i].graphNode.y = level.plantAttachmentPosition[2] + plant.stem[i]._y - 210
         -- Branches
         for j = 1, #plant.branches[i] do
-            plant.branches[i][j].graphNode.x = level.plantAttachmentPosition[1] + plant.branches[i][j]._nextX + 25
-            plant.branches[i][j].graphNode.y = level.plantAttachmentPosition[2] + plant.branches[i][j]._nextY - 200
-            if plant.branches[i][j].leaf then
-                local angle = plant.branches[i][j].leaf.angle + plant.branches[i][j]._totalAngle + (plant.branches[i][j].leaf.flip and -0.1 or 0.1)
-                plant.branches[i][j].leaf.graphNode.x = level.plantAttachmentPosition[1] + plant.branches[i][j]._nextX + 25 + 90*math.cos(angle)
-                plant.branches[i][j].leaf.graphNode.y = level.plantAttachmentPosition[2] + plant.branches[i][j]._nextY - 200 + 90*math.sin(angle)
+            local branch = plant.branches[i][j]
+            if not branch.graphNode then branch.graphNode = moveGraph.append(0,0, (j == 1 and plant.stem[i].graphNode or plant.branches[i][j-1]), 200, "plant") end
+            branch.graphNode.x = level.plantAttachmentPosition[1] + branch._nextX + 25
+            branch.graphNode.y = level.plantAttachmentPosition[2] + branch._nextY - 200
+            if branch.leaf then
+                if not branch.leaf.graphNode then branch.leaf.graphNode = moveGraph.append(0,0, branch.graphNode, 500, "leaf") end
+                local angle = branch.leaf.angle + branch._totalAngle + (branch.leaf.flip and -0.1 or 0.1)
+                branch.leaf.graphNode.x = level.plantAttachmentPosition[1] + branch._nextX + 25 + 90*math.cos(angle)
+                branch.leaf.graphNode.y = level.plantAttachmentPosition[2] + branch._nextY - 200 + 90*math.sin(angle)
             end
         end
     end

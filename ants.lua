@@ -80,15 +80,22 @@ do
 				ant.prevx = ant.x
 				ant.prevy = ant.y
 				-- Movement on Graph
-				local change = moveGraph.proceed(ant, ant.eating and 0.0 or ant.speed, ant.goingHome)
-				ant.vx = (ant.x - ant.prevx)/simulationDt
-				ant.vy = (ant.y - ant.prevy)/simulationDt
+				local change = moveGraph.proceed(ant, ant.eating and ant.speed*0.01 or ant.speed, ant.goingHome)
+				-- fix ants going below ground
+				if ant.toPoint.tp == "ground" and ant.fromPoint.tp == "ground" and simulationDt > 0 then
+					if ant.vx >  0.1 then ant.mirror = true end
+					if ant.vx < -0.1 then ant.mirror = false end
+				end
+				-- eating vs movement
 				if not ant.eating then
+					ant.vx = (ant.x - ant.prevx)/simulationDt
+					ant.vy = (ant.y - ant.prevy)/simulationDt
 					ant.angle = 0.5*math.pi - math.atan2(ant.vx, ant.vy)
 					-- Moved outside?
 					if ant.toPoint == level.leftEntryPoint or ant.toPoint == level.rightEntryPoint then
 						ants.deleteAnt(ant)
 					else
+						-- Start Eating when walking on a leaf
 						if ant.fromPoint.tp == "leaf" and not ant.goingHome then
 							ant.eating = true
 							ant.eatingTimeRemaining = ants.eatDuration

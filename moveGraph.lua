@@ -86,7 +86,7 @@ do
 		if object.p >= 1.0 then
 			local oldPoint = object.fromPoint
 			object.fromPoint = object.toPoint
-			object.toPoint = moveGraph.getNextPoint(object.fromPoint, oldPoint)
+			object.toPoint = moveGraph.getNextPoint(object.fromPoint, oldPoint, leavingPlant)
 			object.p = object.p - 1
 			-- respace progress according to distance
 			local dx, dy = object.toPoint.x - object.fromPoint.x, object.toPoint.y - object.fromPoint.y
