@@ -19,25 +19,25 @@ do
 		textWidgets.width = textWidgets.image:getWidth()
 		textWidgets.height = textWidgets.image:getHeight()
 		-- Branch [color:255,0,0,textWidgets.alpha]This is red text.[n][color:255,255,255,textWidgets.alpha]In a new line, I include an inside the text
-		textWidgets.list[1] = {caption = "Create Branch", cost = {5,5,0},
+		textWidgets.list["createBranch"] = {caption = "Create Branch", cost = {5,5,0},
 			text="Add a new branch to your plant which will grow eventually and provide more grow spots."}
-		textWidgets.list[2] = {caption = "Create Leaf", cost = {3,3,0},
+		textWidgets.list["createLeaf"] = {caption = "Create Leaf", cost = {3,3,0},
 			text="Add a leaf to your plant which will generate valuable glucose"}
-		textWidgets.list[3] = {caption = "Create Poisoned Leaf", cost = {3,6,2},
+		textWidgets.list["upgradePoisonLeaf"] = {caption = "Create Poisoned Leaf", cost = {3,6,2},
 			text="Grow a poisonous leaf that will hurt any foes eating from it. Will generate fewer glucose"}
-		textWidgets.list[4] = {caption = "Call for Spider", cost = {2,2,6},
+		textWidgets.list["upgradeSpiderLeaf"] = {caption = "Call for Spider", cost = {2,2,6},
 			text="Grows a leaf that attracks spiders due to its amazing web supporting capabilities. Will generate fewer glucose"}
-		textWidgets.list[5] = {caption = "Shake it off", cost = {2,2,4},
+		textWidgets.list["dance"] = {caption = "Shake it off", cost = {2,2,4},
 			text="Shake yourself in order to get rid of any unwanted guests"}
-		textWidgets.list[6] = {caption = "Enhance Roots", cost = {4,6,0},
+		textWidgets.list["strikeRoots"] = {caption = "Enhance Roots", cost = {4,6,0},
 			text="Improve the efficiency of your root system to gain more valuable water"}
-		textWidgets.list[7] = {caption = "Create Thorns", cost = {8,8,2},
+		textWidgets.list["spawnThorns"] = {caption = "Create Thorns", cost = {8,8,2},
 			text="Grows powerful thornes that damage any approaching foes"}
 		-- Complete list
-		for i = 1, #textWidgets.list do
-			textWidgets.list[i].x = 0
-			textWidgets.list[i].y = 0
-			textWidgets.list[i].visible = 0.0
+		for k, v in pairs(textWidgets.list) do
+			v.x = 0
+			v.y = 0
+			v.visible = 0.0
 		end
 	end
 
@@ -50,7 +50,7 @@ do
 
 	function textWidgets.draw()
 		local margin = 24
-		for i = 1,#textWidgets.list do
+		for i, v in pairs(textWidgets.list) do
 			local widget = textWidgets.list[i]
 			if widget.visible > 0 then
 				local alpha = 255*clamp(widget.visible,0,1)

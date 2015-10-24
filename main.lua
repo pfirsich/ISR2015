@@ -17,7 +17,7 @@ function enterState(state, ...)
 end 
 
 function love.load()
-	lush.setPath("media/sounds/")
+	lush.setPath("sounds/")
     textWidgets.load()
     if gameState.load then gameState.load() end
     enterState(gameState)

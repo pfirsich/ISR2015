@@ -19,6 +19,22 @@ do
 		--camera.move(0,0)
 	end
 
+	function camera.push()
+		love.graphics.push()
+    	love.graphics.scale(camera.scale)
+    	love.graphics.translate(camera.position[1] + love.window.getWidth()/2/camera.scale, 
+    							camera.position[2] + love.window.getHeight()/2/camera.scale)
+	end 
+
+
+	function camera.worldToScreen(x, y)
+		x = x + camera.position[1] + love.window.getWidth()/2/camera.scale
+		y = y + camera.position[2] + love.window.getHeight()/2/camera.scale
+		return x * camera.scale, y * camera.scale
+	end
+
+	camera.pop = love.graphics.pop
+
 	function camera.setBounds(x1,y1,x2,y2)
 		camera.outerFrame[1] = x1
 		camera.outerFrame[2] = y1
@@ -104,9 +120,6 @@ do
 		camera.currentFrame[3] = camera.currentFrame[1] + camera.viewSize[1]
 		camera.currentFrame[4] = camera.currentFrame[2] + camera.viewSize[2]
 	end
-
-
-
 
     function camera.control(dt, speed)
         camera.dt = dt

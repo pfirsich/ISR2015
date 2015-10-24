@@ -4,8 +4,25 @@ plant.branches = {}
 plant.stemTexture = love.graphics.newImage("images/stem.png")
 plant.leafImage = love.graphics.newImage("images/leaf.png")
 plant.stalkMesh = love.graphics.newMesh(50, plant.stemTexture, "triangles")
-plant.flowerHead = love.graphics.newImage("images/plume.png")
+plant.headImages = {love.graphics.newImage("images/FlowerBud.png"), love.graphics.newImage("images/FlowerOne.png"), love.graphics.newImage("images/FlowerTwo.png")}
+plant.headImageIndex = 2
 plant.shakeAmp = 0
+
+function smallPlant()
+    local totalAngle = 0
+    local angleRange = 0.05 * 2 * math.pi
+    for i = 1, 3 do 
+        local angle = randf(-angleRange - totalAngle, angleRange - totalAngle)
+        table.insert(plant.stem, {angle = angle, angleOrigin = angle, length = randf(100, 120), branchPosition = 0.0, velocity = 0})
+        totalAngle = totalAngle + angle
+    end 
+    plant.stem[1].angle = 0.75 * 2 * math.pi
+    plant.stem[1].angleOrigin = plant.stem[1].angle
+
+    for i = 1, #plant.stem do 
+        plant.branches[i] = {}
+    end 
+end 
 
 function generatePlant()
     local stemSegments = 7
@@ -102,6 +119,16 @@ function drawStalk(points, startThickness, endThickness)
 end  
 
 function plant.update(dt)
+    -- animations
+    for i = 1, #plant.stem do 
+        for j = 1, #plant.branches[i] do 
+            bounceInto(plant.branches[i][j], "targetLength", "length")
+
+            local leaf = plant.branches[i][j].leaf 
+            if leaf then bounceInto(leaf, "targetScale", "scale") end 
+        end 
+    end 
+
 	-- update positions
     local totalAngle = 0
     local cursorX, cursorY = unpack(level.plantAttachmentPosition)
@@ -200,6 +227,15 @@ function plant.update(dt)
     end 
 end
 
+function bounceInto(object, targetKey, key)
+    if object.creationTime and object.creationTime + 2.0 > currentState.time then 
+        local t = (currentState.time - object.creationTime) * 22.0
+        object[key] = object[targetKey] * (1.0 - math.cos(t)*math.pow(t+1, -1.5))
+    else 
+        if object[targetKey] then object[key] = object[targetKey] end
+    end 
+end
+
 function sampleLine(table, samples, interp, lastInTable)
     for n = 1, samples do 
         local t = (n-1) / (samples - (lastInTable and 1 or 0))
@@ -289,7 +325,53 @@ function plant.draw()
 
     --print("taken: ", 1000.0 * (love.timer.getTime() - start))
     love.graphics.setColor(255, 255, 255)
-    love.graphics.draw(plant.flowerHead, stemPoints[#stemPoints-1], stemPoints[#stemPoints], plant.danceAmplitude * 0.01, 0.75, 0.75, plant.flowerHead:getWidth()/2, plant.flowerHead:getHeight()/2)
+    local flowerHeadScale = 0.3
+    local img = plant.headImages[plant.headImageIndex]
+    love.graphics.draw(img, stemPoints[#stemPoints-1], stemPoints[#stemPoints], plant.danceAmplitude * 0.01, 
+                       flowerHeadScale,flowerHeadScale, 512, 768)
+    love.graphics.pop()
+
+    love.graphics.push()
+    love.graphics.origin()
+    for i = 2, #plant.stem - 1 do 
+        if #plant.branches[i] == 0 then
+            local sx, sy = camera.worldToScreen(plant.stem[i]._x, plant.stem[i]._y) 
+            knobs.draw(100*i, sx, sy, {
+                {textWidget = textWidgets.list["createBranch"], clickCallback = function()
+                    local branchSeg = {}
+                    branchSeg.angle = 0.18 * (i % 2 == 0 and 1 or -1) * 2 * math.pi
+                    branchSeg.angleOrigin = branchSeg.angle
+                    branchSeg.targetLength = randf(100, 120)
+                    branchSeg.creationTime = currentState.time
+                    branchSeg.velocity = 0
+                    plant.branches[i] = {branchSeg}
+                    plant.update(simulationDt)
+                end}
+            })
+        else 
+            for j = 1, #plant.branches[i] do 
+                if plant.branches[i][j].leaf == nil then 
+                    local sx, sy = camera.worldToScreen(plant.branches[i][j]._nextX, plant.branches[i][j]._nextY) 
+                    knobs.draw(100*i + j, sx, sy, {
+                        {textWidget = textWidgets.list["createLeaf"], clickCallback = function()
+                            leaf = {}
+                            local leafAngleRange = 0.05 * 2 * math.pi
+                            leaf.angle = randf(-leafAngleRange, leafAngleRange) + 0.1 * 2 * math.pi * (i % 2 == 0 and 1 or -1)
+                            leaf.flip = i % 2 == 1
+                            leaf.angleOrigin = leaf.angle
+                            leaf.targetScale = randf(0.2, 0.25)
+                            leaf.velocity = 0
+                            leaf.creationTime = currentState.time
+                            plant.branches[i][j].leaf = leaf
+                            plant.update(simulationDt)
+                        end}
+                    })
+                else -- level up leaves
+
+                end 
+            end 
+        end 
+    end
     love.graphics.pop()
 end
 

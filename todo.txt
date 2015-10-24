@@ -1,10 +1,4 @@
-Leaf-Physics
--> Integrieren
-
 Lukas:
-Icons für H20, Mineralien, Glucose
-Planzenköpfe x 3 oder x 4
-
 Ameise: 50 px hoch + Geh-Animation + Fress-Animation + verschiedene Faces
 Das gleiche für Raupe, vllt. für Grasshopper
 Backgrounds (2 Layers)
@@ -24,7 +18,6 @@ Schuh
 zweites Blatt
 
 Joel:
-Face <- FICK DAS GESICHT
 Integration
     Interaction-Points spawnen und Funktionen aufrufen
     Blätter erstellen, Äste erstellen (+ Animation vllt.)
