@@ -27,7 +27,8 @@ do
 		knobs.prepareElements(content)
 		-- check mouse interaction
 		local self = knobs.list[id]
-		if knobs.mouseInSphere(x, y, knobs.list[id].hovered and 60 or 32) then
+		if knobs.mouseInSphere(x, y, knobs.list[id].hovered and 50 or 15) then
+			if not self.hovered then lush.play("hover.wav") end
 			self.hovered = true
 		else
 			self.hovered = false
@@ -40,7 +41,7 @@ do
 		end
 		-- Draw basic circle
 		local p = 0.5 - 0.5*math.cos(math.pi*(0.5 - 0.5*math.cos(math.pi*self.zoomedIn)))
-		local size = 22 + 38*p
+		local size = 15 + 35*p
 		love.graphics.circle("line", x, y, size)
 		-- Circles inside
 		if p > 0 then
@@ -71,6 +72,7 @@ do
 						end
 					end
 					if knobs.mouse.leftclick == 2 and content[i].clickCallback then content[i].clickCallback() end
+					if knobs.mouse.leftclick == 2 then knobs.mouse.leftclick = 1 end -- hax
 				else
 					content[i].highlight = clamp(content[i].highlight - knobs.dt*1.6, 0, 1)
 				end

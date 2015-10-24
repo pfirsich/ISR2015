@@ -4,8 +4,54 @@ plant.branches = {}
 plant.stemTexture = love.graphics.newImage("images/stem.png")
 plant.leafImage = love.graphics.newImage("images/leaf.png")
 plant.stalkMesh = love.graphics.newMesh(50, plant.stemTexture, "triangles")
-plant.flowerHead = love.graphics.newImage("images/plume.png")
+plant.headImages = {love.graphics.newImage("images/FlowerBud.png"), love.graphics.newImage("images/FlowerOne.png"), love.graphics.newImage("images/FlowerTwo.png")}
+plant.headImageIndex = 1
 plant.shakeAmp = 0
+plant.growthProgress = 0
+
+plant.mouthOpen = 0.0
+plant.targetMouthOpen = 0.0
+plant.mouthScale = 1.0 
+plant.targetMouthScale = 1.0
+plant.blink = 0.0
+plant.nextBlink = 0
+plant.targetBlink = 0.0
+
+function plant.happyFace()
+    plant.targetMouthOpen = 1.0
+    plant.targetMouthScale = 1.0
+end 
+
+function plant.defaultFace()
+    plant.targetMouthOpen = 0.0
+    plant.targetMouthScale = 1.0
+end 
+
+function plant.sadFace()
+    plant.targetMouthOpen = 0.0
+    plant.targetMouthScale = -1.0
+end 
+
+function plant.screamFace()
+    plant.targetMouthOpen = 1.0
+    plant.targetMouthScale = -1.0
+end 
+
+function smallPlant()
+    local totalAngle = 0
+    local angleRange = 0.05 * 2 * math.pi
+    for i = 1, 3 do 
+        local angle = randf(-angleRange - totalAngle, angleRange - totalAngle)
+        table.insert(plant.stem, {angle = angle, angleOrigin = angle, length = randf(100, 120), branchPosition = 0.0, velocity = 0})
+        totalAngle = totalAngle + angle
+    end 
+    plant.stem[1].angle = 0.75 * 2 * math.pi
+    plant.stem[1].angleOrigin = plant.stem[1].angle
+
+    for i = 1, #plant.stem do 
+        plant.branches[i] = {}
+    end 
+end 
 
 function generatePlant()
     local stemSegments = 7
@@ -102,6 +148,16 @@ function drawStalk(points, startThickness, endThickness)
 end  
 
 function plant.update(dt)
+    -- animations
+    for i = 1, #plant.stem do 
+        for j = 1, #plant.branches[i] do 
+            bounceInto(plant.branches[i][j], "targetLength", "length")
+
+            local leaf = plant.branches[i][j].leaf 
+            if leaf then bounceInto(leaf, "targetScale", "scale") end 
+        end 
+    end 
+
 	-- update positions
     local totalAngle = 0
     local cursorX, cursorY = unpack(level.plantAttachmentPosition)
@@ -110,11 +166,21 @@ function plant.update(dt)
 
     local maxShakeAmp = 12.0
     if love.keyboard.isDown(" ") then 
+        if plant.shakeAmp < 0.01 then 
+            lush.play("leaves.wav")
+            plant.screamFace()
+        end 
+
         plant.shakeAmp = plant.shakeAmp + dt*maxShakeAmp*5.0
         if plant.shakeAmp > maxShakeAmp then plant.shakeAmp = maxShakeAmp end
     else 
-        plant.shakeAmp = plant.shakeAmp - dt*maxShakeAmp
-        if plant.shakeAmp < 0.0 then plant.shakeAmp = 0.0 end
+        if plant.shakeAmp > 0.0 then 
+            plant.shakeAmp = plant.shakeAmp - dt*maxShakeAmp
+            if plant.shakeAmp < 0.0 then 
+                plant.shakeAmp = 0.0 
+                plant.defaultFace()
+            end
+        end
     end 
 
     for i = 1, #plant.stem do 
@@ -197,6 +263,29 @@ function plant.update(dt)
                 leaf.angle = leaf.angle + leaf.velocity * dt
             end 
         end
+    end 
+
+    -- face 
+    if currentState.time > plant.nextBlink then 
+        plant.targetBlink = 1.0 - plant.targetBlink
+        if plant.targetBlink < 0.5 then 
+            plant.nextBlink = currentState.time + 2.0 + love.math.random() * 3.0
+        else 
+            plant.nextBlink = currentState.time + 0.1
+        end
+    end 
+    
+    plant.blink = plant.blink + (plant.targetBlink - plant.blink) * dt * 20.0
+    plant.mouthOpen = plant.mouthOpen + (plant.targetMouthOpen - plant.mouthOpen) * dt * 10.0
+    plant.mouthScale = plant.mouthScale + (plant.targetMouthScale - plant.mouthScale) * dt * 10.0
+end
+
+function bounceInto(object, targetKey, key)
+    if object.creationTime and object.creationTime + 2.0 > currentState.time then 
+        local t = (currentState.time - object.creationTime) * 22.0
+        object[key] = object[targetKey] * (1.0 - math.cos(t)*math.pow(t+1, -1.5))
+    else 
+        if object[targetKey] then object[key] = object[targetKey] end
     end 
 end
 
@@ -289,7 +378,94 @@ function plant.draw()
 
     --print("taken: ", 1000.0 * (love.timer.getTime() - start))
     love.graphics.setColor(255, 255, 255)
-    love.graphics.draw(plant.flowerHead, stemPoints[#stemPoints-1], stemPoints[#stemPoints], plant.danceAmplitude * 0.01, 0.75, 0.75, plant.flowerHead:getWidth()/2, plant.flowerHead:getHeight()/2)
+    local flowerHeadScale = 0.3
+    local img = plant.headImages[plant.headImageIndex]
+    love.graphics.draw(img, stemPoints[#stemPoints-1], stemPoints[#stemPoints], plant.danceAmplitude * 0.01, 
+                       flowerHeadScale,flowerHeadScale, 512, 768)
+
+    local faceOffset = {0, 0,    -28, -90,   0, -20}
+    local scale = {0.0,   0.6,   0.9}
+
+    love.graphics.push()
+    local mouthX, mouthY = stemPoints[#stemPoints-1], stemPoints[#stemPoints]
+    mouthX, mouthY = mouthX + faceOffset[plant.headImageIndex*2-1+0], mouthY + faceOffset[plant.headImageIndex*2-1+1]
+    love.graphics.translate(mouthX, mouthY)
+    love.graphics.rotate(plant.danceAmplitude * 0.01)
+    love.graphics.scale(scale[plant.headImageIndex], scale[plant.headImageIndex])
+    mouthX, mouthY = camera.worldToScreen(mouthX, mouthY)
+    local relX, relY = love.mouse.getX() - mouthX, love.mouse.getY() - mouthY
+    local dist = math.sqrt(relX*relX + relY*relY)
+    local lastCloseFace = plant.closeToFace
+    plant.closeToFace = dist < 200
+    if plant.closeToFace and not lastCloseFace then 
+        plant.happyFace()
+    end 
+    if not plant.closeToFace and lastCloseFace then 
+        plant.defaultFace()
+    end 
+    if not plant.closeToFace then 
+        relX, relY = 0, 1
+    end 
+    drawMouth(plant.mouthOpen, plant.mouthScale, plant.blink, relX, relY)
+    love.graphics.pop()
+
+    love.graphics.pop()
+
+    love.graphics.push()
+    love.graphics.origin()
+    if plant.headImageIndex == 1 then 
+        local sx, sy = camera.worldToScreen(stemPoints[#stemPoints-1], stemPoints[#stemPoints]) 
+        knobs.draw(20, sx, sy, {
+            {textWidget = textWidgets.list["openBud"], clickCallback = function()
+                plant.headImageIndex = plant.headImageIndex + 1
+                lush.play("levelup.wav")
+            end}
+        })
+    else 
+        for i = 2, #plant.stem - 1 do 
+            if #plant.branches[i] == 0 then
+                local sx, sy = camera.worldToScreen(plant.stem[i]._x, plant.stem[i]._y) 
+                knobs.draw(100*i, sx, sy, {
+                    {textWidget = textWidgets.list["createBranch"], clickCallback = function()
+                        local branchSeg = {}
+                        branchSeg.angle = 0.18 * (i % 2 == 0 and 1 or -1) * 2 * math.pi
+                        branchSeg.angleOrigin = branchSeg.angle
+                        branchSeg.targetLength = randf(100, 120)
+                        branchSeg.creationTime = currentState.time
+                        branchSeg.velocity = 0
+                        plant.branches[i] = {branchSeg}
+                        plant.happyFace()
+                        plant.update(simulationDt)
+                        lush.play("ability.wav")
+                    end}
+                })
+            else 
+                for j = 1, #plant.branches[i] do 
+                    if plant.branches[i][j].leaf == nil then 
+                        local sx, sy = camera.worldToScreen(plant.branches[i][j]._nextX, plant.branches[i][j]._nextY) 
+                        knobs.draw(100*i + j, sx, sy, {
+                            {textWidget = textWidgets.list["createLeaf"], clickCallback = function()
+                                leaf = {}
+                                local leafAngleRange = 0.05 * 2 * math.pi
+                                leaf.angle = randf(-leafAngleRange, leafAngleRange) + 0.1 * 2 * math.pi * (i % 2 == 0 and 1 or -1)
+                                leaf.flip = i % 2 == 1
+                                leaf.angleOrigin = leaf.angle
+                                leaf.targetScale = randf(0.2, 0.25)
+                                leaf.velocity = 0
+                                leaf.creationTime = currentState.time
+                                plant.branches[i][j].leaf = leaf
+                                plant.happyFace()
+                                plant.update(simulationDt)
+                                lush.play("ability.wav")
+                            end}
+                        })
+                    else -- level up leaves
+
+                    end 
+                end 
+            end 
+        end
+    end
     love.graphics.pop()
 end
 

@@ -1,22 +1,19 @@
-Leaf-Physics
--> Integrieren
-
 Lukas:
-Icons für H20, Mineralien, Glucose
-Planzenköpfe x 3 oder x 4
+Ameise: Fress-Animation
+Dornen x 3
+Pilze x 2 
+Das gleiche für Raupe
 
-Ameise: 50 px hoch + Geh-Animation + Fress-Animation + verschiedene Faces
-Das gleiche für Raupe, vllt. für Grasshopper
 Backgrounds (2 Layers)
+
+Das gleiche für Raupe, vllt. für Grasshopper
 Spinne: 
     Kokon
     Netz
     Einmal von oben + Gehen
     Einmal von der Seite + Gehn
 Icons für die Abilities
-Dornen
 Blätter mit Spinnen-Schild
-Pilze x 2 
 Regentropfen
 Schuh
 
@@ -24,12 +21,10 @@ Schuh
 zweites Blatt
 
 Joel:
-Face <- FICK DAS GESICHT
-Integration
-    Interaction-Points spawnen und Funktionen aufrufen
-    Blätter erstellen, Äste erstellen (+ Animation vllt.)
+Ressourcen
 Abfaul-Shader / Fress-Shader
 Intro
+    Einfaden mit Musik und so
 Wurzeln
 Musik
 Sound
@@ -38,3 +33,5 @@ Blätter streicheln
 
 Markus:
 Ameisen
+
+Partikel: Schuh, Mampfen, Levelup, neue Dinger
