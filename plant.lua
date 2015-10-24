@@ -473,3 +473,42 @@ function applyForce(elements, index, forceX, forceY, inertia, dt)
     local relX, relY = elements[index]._x - elements[index-1]._x, elements[index]._y - elements[index-1]._y
     elements[index-1].velocity = elements[index-1].velocity + (relX * forceY - relY * forceX) * dt / inertia
 end
+
+
+function plant.appendToGraph()
+    plant.update(0)
+    -- Stem
+    local prev = level.plantAttachmentNode
+    for i = 2, #plant.stem do
+        prev = moveGraph.append(0,0, prev, 20, "plant")
+        -- Branches
+        plant.stem[i].graphNode = prev
+        local bprev = prev
+        for j = 1, #plant.branches[i] do
+            bprev = moveGraph.append(0,0, bprev, 40, "plant")
+            plant.branches[i][j].graphNode = bprev
+            if plant.branches[i][j].leaf then
+                plant.branches[i][j].leaf.graphNode = moveGraph.append(plant.branches[i][j]._x, plant.branches[i][j]._y+50, bprev, 80, "leaf")
+            end
+        end
+    end
+    plant.updateGraph()
+end
+
+function plant.updateGraph()
+    -- Stem
+    for i = 2, #plant.stem do
+        plant.stem[i].graphNode.x = level.plantAttachmentPosition[1] + plant.stem[i]._x + 25
+        plant.stem[i].graphNode.y = level.plantAttachmentPosition[2] + plant.stem[i]._y - 210
+        -- Branches
+        for j = 1, #plant.branches[i] do
+            plant.branches[i][j].graphNode.x = level.plantAttachmentPosition[1] + plant.branches[i][j]._nextX + 25
+            plant.branches[i][j].graphNode.y = level.plantAttachmentPosition[2] + plant.branches[i][j]._nextY - 200
+            if plant.branches[i][j].leaf then
+                local angle = plant.branches[i][j].leaf.angle + plant.branches[i][j]._totalAngle + (plant.branches[i][j].leaf.flip and -0.1 or 0.1)
+                plant.branches[i][j].leaf.graphNode.x = level.plantAttachmentPosition[1] + plant.branches[i][j]._nextX + 25 + 90*math.cos(angle)
+                plant.branches[i][j].leaf.graphNode.y = level.plantAttachmentPosition[2] + plant.branches[i][j]._nextY - 200 + 90*math.sin(angle)
+            end
+        end
+    end
+end

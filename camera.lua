@@ -124,13 +124,20 @@ do
     function camera.control(dt, speed)
         camera.dt = dt
         speed = speed or 1000
+        local lw = love.window.getWidth()
+        local lh = love.window.getHeight()
+        local dif = love.window.getHeight()*0.2
         local mx,my = love.mouse.getPosition()
-        local left = love.keyboard.isDown("left") or mx < 30
-        local right = love.keyboard.isDown("right") or mx > love.window.getWidth()-30
-        local up = love.keyboard.isDown("up") or my < 30
-        local down = love.keyboard.isDown("down") or my > love.window.getHeight()-30 
+        local left = love.keyboard.isDown("left")  or love.keyboard.isDown("a")
+        local right = love.keyboard.isDown("right")  or love.keyboard.isDown("d")
+        local up = love.keyboard.isDown("up")  or love.keyboard.isDown("w")
+        local down = love.keyboard.isDown("down")  or love.keyboard.isDown("s")
         local rl = (right and 1 or 0) - (left and 1 or 0)
         local ud = (down  and 1 or 0) - (up   and 1 or 0)
+        if mx < dif then rl = rl - (1.0 - mx/dif) end
+        if my < dif then ud = ud - (1.0 - my/dif) end
+        if mx > lw-dif then rl = rl + (mx - lw + dif)/dif end
+        if my > lh-dif then ud = ud + (my - lh + dif)/dif end
         camera.move(rl*speed, ud*speed)
     end
 
