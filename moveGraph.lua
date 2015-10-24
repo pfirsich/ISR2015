@@ -11,7 +11,7 @@ do
 	end
 
 
-	function moveGraph.append(x, y, parent, priority)
+	function moveGraph.append(x, y, parent, priority, tp)
 		local dis = 0
 		if parent then
 			local dx = x - parent.x
@@ -19,13 +19,20 @@ do
 			dis = math.sqrt(dx*dx + dy*dy)
 		end
 		local node = {
-			x = x,
-			y = y,
-			neighbours = parent and {{parent, dis}} or {},
+			id = #moveGraph.nodes+1,
+			tp = tp,
+			x = x+0,
+			y = y+0,
+			neighbours = (parent and {{parent, dis}} or {}),
 			priority = priority or 1,
 			inversePriority = priority and 1.0/priority or 1,
 		}
-		if parent then table.insert(parent.neighbours, {node,dis}) end
+		print("Adding node at " .. x .. "," .. y .. " with id " .. node.id .. " for parent " .. (parent and parent.id or "nil"))
+		print("Now has " .. #node.neighbours .. " neighbours")
+		if parent then
+			table.insert(parent.neighbours, {node,dis}) 
+			print("Added as neighbour of node " .. parent.id)
+		end
 		table.insert(moveGraph.nodes, node)
 		return node
 	end
@@ -53,9 +60,10 @@ do
 				local newPoint = targets[#targets]
 				for i = 1,#targets-1 do
 					local pri = (leavingPlant and targets[i].inversePriority or targets[i].priority)
-					if r < pri then newPoint = i; break end
+					if r < pri then newPoint = targets[i]; break end
 					r = r - pri
 				end
+				return newPoint
 			else
 				-- Single target point
 				return targets[1]
@@ -67,27 +75,47 @@ do
 	end
 
 
-	function moveGraph.proceed(fromPoint, toPoint, p, speed, leavingPlant)
+	function moveGraph.proceed(object, speed, leavingPlant)
 		leavingPlant = leavingPlant or false
 		-- Move forward with speed
-		local dx = toPoint.x - fromPoint.x
-		local dy = toPoint.y - fromPoint.y
+		local dx = object.toPoint.x - object.fromPoint.x
+		local dy = object.toPoint.y - object.fromPoint.y
 		local dis = math.sqrt(dx*dx + dy*dy)
-		p = p + speed/dis
+		object.p = object.p + speed/dis
 		-- Progressed to other node
-		if p >= 1.0 then
-			local oldPoint = fromPoint
-			fromPoint = toPoint
-			toPoint = moveGraph.getNextPoint(fromPoint, oldPoint)
-			p = p - 1
+		if object.p >= 1.0 then
+			local oldPoint = object.fromPoint
+			object.fromPoint = object.toPoint
+			object.toPoint = moveGraph.getNextPoint(object.fromPoint, oldPoint)
+			object.p = object.p - 1
 			-- respace progress according to distance
-			local dx, dy = toPoint.x - fromPoint.x, toPoint.y - fromPoint.y
+			local dx, dy = object.toPoint.x - object.fromPoint.x, object.toPoint.y - object.fromPoint.y
 			local newdis = math.sqrt(dx*dx + dy*dy)
-			p = p * dis / newdis
+			object.p = object.p * dis / newdis
 		end
-		-- Return relevant information, caller should apply these values to respective object
-		return fromPoint, toPoint, p
+		-- Apply position
+		local p1 = 1.0 - object.p
+		local nx = object.p * object.toPoint.x + p1 * object.fromPoint.x
+		local ny = object.p * object.toPoint.y + p1 * object.fromPoint.y
+		local f = object.inertia or 0.97
+		object.x = f*object.x + (1-f)*nx
+		object.y = f*object.y + (1-f)*ny
 	end
 
+
+
+	function moveGraph.debugDraw()
+		love.graphics.setColor(255,255,255,255)
+		for i = 1,#moveGraph.nodes do
+			local node = moveGraph.nodes[i]
+			love.graphics.circle("line", node.x, node.y, 10)
+			for j = 1,#node.neighbours do
+				local nb = node.neighbours[j][1]
+				if node.id > nb.id then
+					love.graphics.line(node.x, node.y, nb.x, nb.y)
+				end
+			end
+		end
+	end
 
 end

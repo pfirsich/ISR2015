@@ -71,13 +71,14 @@ do
 
         -- Move Graph for Ants and stuff
         moveGraph.clear()
-        local prev = moveGraph.append(groundSurfacePoints[1], groundSurfacePoints[2])
+        local prev = moveGraph.append(groundSurfacePoints[1], groundSurfacePoints[2], nil, 1, "ground")
         level.leftEntryPoint = prev
-        for i = 2,groundSegments do
-            prev = moveGraph.append(groundSurfacePoints[2*i-1], groundSurfacePoints[2*i], prev)
+        level.plantAttachmentPoint = math.floor(groundSegments/2+0.5)
+        for i = 2,groundSegments,2 do
+            prev = moveGraph.append(groundSurfacePoints[2*i-1], groundSurfacePoints[2*i], prev, 1, "ground")
+            if i == level.plantAttachmentPoint then level.plantAttachmentNode = prev end
         end
         level.rightEntryPoint = prev
-        level.plantAttachmentPoint = math.floor(groundSegments/2+0.5)
         level.plantAttachmentPosition = {groundSurfacePoints[2*level.plantAttachmentPoint-1], 
             groundSurfacePoints[2*level.plantAttachmentPoint]}
 
@@ -128,6 +129,58 @@ do
         end
 
         return list
+    end
+
+
+    level.store = {}
+
+    function level.getGroundHeight(x)
+        if x < level.leftEntryPoint.x then
+            -- Left Frame
+            level.store.fromNode = level.leftEntryPoint.neighbours[1][1]
+            level.store.toNode = level.leftEntryPoint
+            level.store.p = 1.0
+            return level.leftEntryPoint.y
+        elseif x > level.rightEntryPoint.x then
+            -- Right Frame
+            level.store.fromNode = level.rightEntryPoint.neighbours[1][1] 
+            level.store.toNode = level.rightEntryPoint
+            level.store.p = 1.0
+            return level.rightEntryPoint.y
+        else
+            -- Anywhere else
+            local node = level.leftEntryPoint.neighbours[1][1]
+            while node ~= level.rightEntryPoint do
+                -- Check
+                if node.x >= x then
+                    -- Get exact coordinates and return
+                    if x < 0 then
+                        -- Walk to the right
+                        level.store.fromNode = node
+                        level.store.toNode = node.neighbours[1][1]
+                        level.store.p = (x - level.store.toNode.x)/(node.x - level.store.toNode.x)
+                        return node.y
+                    else
+                        -- Walk to the left
+                        level.store.fromNode = node.neighbours[1][1]
+                        level.store.toNode = node
+                        level.store.p = (x - level.store.fromNode.x)/(node.x - level.store.fromNode.x)
+                        return node.y
+                    end
+                end
+                -- Proceed
+                node = node.neighbours[2][1]
+            end
+            -- Something went wrong, return something
+            level.store.fromNode = level.rightEntryPoint.neighbours[1][1] 
+            level.store.toNode = level.rightEntryPoint
+            level.store.p = 1.0
+            return level.leftEntryPoint.y
+        end
+    end
+
+    function level.getGroundNode(x)
+        return level.store.fromNode, level.store.toNode, level.store.p
     end
 
 

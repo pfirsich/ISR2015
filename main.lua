@@ -7,6 +7,7 @@ require "level"
 require "moveGraph"
 require "states.game"
 require "plant"
+require "ants"
 lush = require "lush"
 
 currentState = {} -- empty state, does nothing
@@ -20,12 +21,15 @@ function love.load()
 	lush.setPath("media/sounds/")
     textWidgets.load()
     if gameState.load then gameState.load() end
-    enterState(gameState)
 
+    ants.load()
     level.load()
     camera.load()
     camera.setBounds(-1500,-700,nil,500)
     level.generate()
+
+
+    enterState(gameState)
 
     camera.setScale(1.0)
 
