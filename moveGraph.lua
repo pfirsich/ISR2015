@@ -97,7 +97,7 @@ do
 		local dx = object.toPoint.x - object.fromPoint.x
 		local dy = object.toPoint.y - object.fromPoint.y
 		local dis = math.sqrt(dx*dx + dy*dy)
-		object.p = object.p + speed/dis
+		object.p = object.p + simulationDt*speed*80/dis
 		-- Progressed to other node
 		if object.p >= 1.0 then
 			local oldPoint = object.fromPoint

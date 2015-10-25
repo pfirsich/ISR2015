@@ -20,7 +20,7 @@ end
 shoeScale = 2.3
 
 function startState.update()
-	camera.move(0, -1)
+	camera.move(0, -120)
 	plant.update(simulationDt)
 	--camera.control(simulationDt, 1000)
 	if music:tell("seconds") > 9.674 then 

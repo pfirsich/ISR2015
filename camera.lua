@@ -70,7 +70,7 @@ do
 	end
 
 	function camera.move(dx, dy)
-		local smoothing = 0.96
+		local smoothing = 0.85
 		local inversed = 1.0-smoothing
 		camera.velocity[1] = smoothing*camera.velocity[1] + inversed*dx
 		camera.velocity[2] = smoothing*camera.velocity[2] + inversed*dy
@@ -78,8 +78,8 @@ do
 	end
 
 	function camera.moveBy(dx, dy)
-		dx = -camera.dt*dx
-		dy = -camera.dt*dy
+		dx = -simulationDt*dx
+		dy = -simulationDt*dy
 		-- Movement damped?true
 		if camera.position[1] >= camera.freeMoveBounds[1] and camera.position[1] <= camera.freeMoveBounds[3] then
 			if camera.position[2] >= camera.freeMoveBounds[2] and camera.position[2] <= camera.freeMoveBounds[4] then
@@ -122,11 +122,10 @@ do
 	end
 
     function camera.control(dt, speed)
-        camera.dt = dt
         speed = speed or 1000
         local lw = love.window.getWidth()
         local lh = love.window.getHeight()
-        local dif = love.window.getHeight()*0.2
+        local dif = love.window.getHeight()*0.1
         local mx,my = love.mouse.getPosition()
         local left = love.keyboard.isDown("left")  or love.keyboard.isDown("a")
         local right = love.keyboard.isDown("right")  or love.keyboard.isDown("d")
