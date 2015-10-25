@@ -44,7 +44,7 @@ function director(dt)
     	plant.update(dt)
     end 
 
-    if #plant.stem >= 3 then 
+    if #plant.stem >= 4 then 
     	local interval = 20.0
     	if nextAntSpawn < currentState.time then 
     		nextAntSpawn = currentState.time + lerp(20.0, 4.0, (#plant.stem - 3)/7) + love.math.random()

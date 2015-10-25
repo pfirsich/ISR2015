@@ -8,10 +8,11 @@ do
 		list = {},
 	}
 
+
 	resourceInfo = {
-		{name = "H2O", icon = love.graphics.newImage("images/UI/h2oicon.png"), color = {80,120,255}},
-		{name = "Glucose", icon = love.graphics.newImage("images/UI/glucoseicon.png"), color = {240,230,22}},
-		{name = "Minerals", icon = love.graphics.newImage("images/UI/mineralsicon.png"), color = {160,110,32}},
+		h2o = {name = "H2O", icon = love.graphics.newImage("images/UI/h2oicon.png"), color = {80,120,255}},
+		glucose = {name = "Glucose", icon = love.graphics.newImage("images/UI/glucoseicon.png"), color = {240,230,22}},
+		minerals = {name = "Minerals", icon = love.graphics.newImage("images/UI/mineralsicon.png"), color = {160,110,32}},
 	}
 
 	function textWidgets.load()
@@ -20,7 +21,7 @@ do
 		textWidgets.width = textWidgets.imageScale * textWidgets.image:getWidth()
 		textWidgets.height = textWidgets.imageScale * textWidgets.image:getHeight()
 		-- Branch [color:255,0,0,textWidgets.alpha]This is red text.[n][color:255,255,255,textWidgets.alpha]In a new line, I include an inside the text
-		textWidgets.list["createBranch"] = {caption = "Create Branch", cost = {5,5,0},
+		textWidgets.list["createBranch"] = {caption = "Create Branch", cost = {50,50,0},
 			text="Add a new branch to your plant which will grow eventually and provide more leaf growth spots."}
 		textWidgets.list["createLeaf"] = {caption = "Create Leaf", cost = {3,3,0},
 			text="Add a leaf to your plant which will generate valuable glucose"}
@@ -73,21 +74,22 @@ do
 				-- Resources
 				local y = y2-margin-12
 				local pos = 0
-				for i = 1,3 do
+				for i, k in ipairs({"h2o", "glucose", "minerals"}) do
 					if widget.cost[i] > 0 then
 						pos = pos + 1
 						local x = x1 + textWidgets.width*(pos-0.5)/3.0
 						-- Draw
-						resourceInfo[i].color[4] = alpha
-						if resourceInfo[i].icon then
-							love.graphics.draw(resourceInfo[i].icon, x-16, y+4, 0, 0.7,0.7, 32,32)
-							love.graphics.setColor(resourceInfo[i].color)
+						resourceInfo[k].color[4] = alpha
+						if resourceInfo[k].icon then
+							love.graphics.draw(resourceInfo[k].icon, x-16, y+4, 0, 0.7,0.7, 32,32)
+							love.graphics.setColor(resourceInfo[k].color)
 						else
-							love.graphics.setColor(resourceInfo[i].color)
+							love.graphics.setColor(resourceInfo[k].color)
 							love.graphics.circle("fill", x-16, y+4,14)
 						end
 						love.graphics.print(widget.cost[i], x+16, y, 0, 1.5, 1.5)
 						love.graphics.setColor(255,255,255,alpha)
+						resourceInfo[k].color[4] = 255
 					end
 				end
 				-- Hide it

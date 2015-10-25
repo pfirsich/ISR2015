@@ -6,7 +6,8 @@ function gameState.load()
     smallPlant()
     plant.appendToGraph()
     ants.testInit()
-    plant.strikeRoots()
+    --plant.strikeRoots()
+    hudValueFont = love.graphics.newFont(30)
 end
 
 function gameState.onEnter()
@@ -23,7 +24,31 @@ function gameState.update()
     camera.control(simulationDt, 1000)
     knobs.update(simulationDt)
     director(simulationDt)
+
+    local leaves = 0
+    for i = 1, #plant.stem do 
+        for j = 1, #plant.branches[i] do 
+            if plant.branches[i][j].leaf then leaves = leaves + 1 end
+        end 
+    end 
+
+    if resources.glucose - simulationDt * plant.rootLevel > 0 then 
+        resources.glucose = resources.glucose - simulationDt * plant.rootLevel
+        resources.h2o = resources.h2o + simulationDt * 3.0 * plant.rootLevel
+    end
+
+    if resources.h2o - simulationDt * leaves > 0 then 
+        resources.glucose = resources.glucose + simulationDt * 2.0 * leaves
+        resources.h2o = resources.h2o - simulationDt * leaves
+    end
 end
+
+
+resources = {
+    h2o = 100,
+    glucose = 100,
+    minerals = 100
+}
 
 
 function gameState.draw()
@@ -44,7 +69,7 @@ function gameState.draw()
     love.graphics.origin()
     local knobList = {}
 
-    if #plant.stem > 2 then 
+    if #plant.stem > 3 then 
         knobList[#knobList+1] = {
             textWidget = textWidgets.list["dance"], 
             clickCallback = function()
@@ -60,7 +85,7 @@ function gameState.draw()
         }
     end 
 
-    if #plant.stem > 3 then 
+    if #plant.stem > 2 then 
         knobList[#knobList+1] = {
             textWidget = textWidgets.list["strikeRoots"], 
             clickCallback = function()
@@ -84,6 +109,34 @@ function gameState.draw()
 
     -- Interface
     textWidgets.draw()
+
+    -- love.graphics.setLineWidth(2)
+    -- love.graphics.setColor(255, 255, 255, 255)
+    -- love.graphics.rectangle("line", 1, 1, love.window.getWidth(), 25)
+    -- love.graphics.setColor(0, 0, 0, 255)
+    -- love.graphics.rectangle("fill", 1, 1, love.window.getWidth(), 25)
+
+    local oldFont = love.graphics.getFont()
+    love.graphics.setColor(255, 255, 255, 255)
+    for i, kind in ipairs({"h2o", "glucose", "minerals"}) do 
+        love.graphics.setFont(oldFont)
+        love.graphics.setColor(255, 255, 255, 255)
+        local x = (i-1) * love.window.getWidth() / 3 + 10
+        local iconOffset = love.graphics.getFont():getWidth(resourceInfo[kind].name)
+        love.graphics.print(resourceInfo[kind].name, x, 5)
+        love.graphics.draw(resourceInfo[kind].icon, x + iconOffset, 5)
+
+        love.graphics.setFont(hudValueFont)
+        local iconSizeX, iconSizeY = resourceInfo[kind].icon:getDimensions()
+        local height = love.graphics.getFont():getHeight()
+
+        love.graphics.setColor(0, 0, 0, 255)
+        love.graphics.print(tostring(math.floor(resources[kind])), x + iconOffset + iconSizeX + 10 + 2, iconSizeY / 2 - height / 2 + 2)
+        
+        love.graphics.setColor(resourceInfo[kind].color)
+        love.graphics.print(tostring(math.floor(resources[kind])), x + iconOffset + iconSizeX + 10, iconSizeY / 2 - height / 2)
+    end 
+    love.graphics.setFont(oldFont)
 end
 
 function gameState.keypressed(key)

@@ -106,6 +106,9 @@ do
 					end
 					if knobs.mouse.leftclick == 2 and content[i].clickCallback then 
 						content[i].clickCallback()
+						for j, k in ipairs({"h2o", "glucose", "minerals"}) do 
+							resources[k] = resources[k] - content[i].textWidget.cost[j]
+						end 
 						knobs.used[key] = true
 					 end
 					if knobs.mouse.leftclick == 2 then knobs.mouse.leftclick = 1 end -- hax
