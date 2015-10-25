@@ -82,7 +82,7 @@ do
         level.plantAttachmentPosition = {groundSurfacePoints[2*level.plantAttachmentPoint-1], 
             groundSurfacePoints[2*level.plantAttachmentPoint]}
 
-        camera.setBounds(-w/2,-1000,w/2,700)
+        camera.setBounds(-w/2,-1000,w/2,1200)
 
     end
 

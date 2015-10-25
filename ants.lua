@@ -4,7 +4,7 @@ do
 
 	ants = {
 		list = {},
-		speed = 1.7,
+		speed = 5.0,
 		gravity = 800,
 		eatDuration = 5.0,
 	}

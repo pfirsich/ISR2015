@@ -19,6 +19,7 @@ function gameState.update()
     -- Camera Movement
     camera.control(simulationDt, 1000)
     knobs.update(simulationDt)
+    director(simulationDt)
 end
 
 
@@ -33,7 +34,7 @@ function gameState.draw()
 
     level.draw()
     ants.draw()
-    --moveGraph.debugDraw()
+    moveGraph.debugDraw()
     camera.pop()
 
     -- Interface

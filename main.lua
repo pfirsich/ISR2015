@@ -9,6 +9,7 @@ require "states.game"
 require "plant"
 require "face"
 require "ants"
+require "director"
 lush = require "lush"
 
 currentState = {time = 0} -- empty state, does nothing
@@ -25,7 +26,6 @@ function love.load()
     ants.load()
     level.load()
     camera.load()
-    camera.setBounds(-1500,-700,nil,500)
     level.generate()
 
     if gameState.load then gameState.load() end
