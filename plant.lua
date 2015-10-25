@@ -226,7 +226,7 @@ function plant.update(dt)
     -- apply wind
     local surge = love.math.noise(love.timer.getTime() * 0.1)
     surge = surge * surge * surge; surge = surge * surge;
-    local windAmp = (love.math.noise(love.timer.getTime()) + love.math.noise(love.timer.getTime() * 1.235335) + surge*5.0) * 0.0005
+    local windAmp = (love.math.noise(love.timer.getTime()) + love.math.noise(love.timer.getTime() * 1.235335) + surge*5.0) * 0.0001
     local windX, windY = -windAmp, 0
 
     for i = 2, #plant.stem do 
@@ -254,7 +254,7 @@ function plant.update(dt)
 
         for j = 1, #plant.branches[i] do 
             plant.branches[i][j].velocity = plant.branches[i][j].velocity + (plant.branches[i][j].angleOrigin - plant.branches[i][j].angle) * dt * 10.0 --5
-            plant.branches[i][j].velocity = plant.branches[i][j].velocity - plant.branches[i][j].velocity * dt * 0.1
+            plant.branches[i][j].velocity = plant.branches[i][j].velocity - plant.branches[i][j].velocity * dt * 0.8
             plant.branches[i][j].angle = plant.branches[i][j].angle + plant.branches[i][j].velocity * dt
 
             local leaf = plant.branches[i][j].leaf
@@ -499,27 +499,56 @@ function plant.appendToGraph()
             end
         end
     end
-    plant.updateGraph()
+    --plant.updateGraph()
 end
 
 function plant.updateGraph()
     -- Stem
     for i = 2, #plant.stem do
-        if not plant.stem[i].graphNode then plant.stem[i].graphNode = moveGraph.append(0,0, plant.stem[i-1].graphNode, 100, "plant") end
+        if not plant.stem[i].graphNode then 
+            -- Create new Stem node
+            plant.stem[i].graphNode = moveGraph.append(0,0, plant.stem[i-1].graphNode, 100, "plant") 
+        end
+        -- Update stem position
         plant.stem[i].graphNode.x = level.plantAttachmentPosition[1] + plant.stem[i]._x + 25
         plant.stem[i].graphNode.y = level.plantAttachmentPosition[2] + plant.stem[i]._y - 210
         -- Branches
         for j = 1, #plant.branches[i] do
             local branch = plant.branches[i][j]
-            if not branch.graphNode then branch.graphNode = moveGraph.append(0,0, (j == 1 and plant.stem[i].graphNode or plant.branches[i][j-1].graphNode), 200, "plant") end
+            if not branch.graphNode then 
+                -- create new branch node
+                local parent = ((j == 1) and plant.stem[i].graphNode or plant.branches[i][j-1].graphNode)
+                branch.graphNode = moveGraph.append(0,0, parent, 200, "plant") 
+                branch.graphNode.stemIndex = i
+                branch.graphNode.branchIndex = j
+            end
+            -- update branch position
             branch.graphNode.x = level.plantAttachmentPosition[1] + branch._nextX + 25
             branch.graphNode.y = level.plantAttachmentPosition[2] + branch._nextY - 200
             if branch.leaf then
-                if not branch.leaf.graphNode then branch.leaf.graphNode = moveGraph.append(0,0, branch.graphNode, 500, "leaf") end
+                if not branch.leaf.graphNode then
+                    -- create new leaf node 
+                    branch.leaf.graphNode = moveGraph.append(0,0, branch.graphNode, 500, "leaf")
+                    branch.leaf.graphNode.stemIndex = i
+                    branch.leaf.graphNode.branchIndex = j 
+                end
+                -- update leaf position
                 local angle = branch.leaf.angle + branch._totalAngle + (branch.leaf.flip and -0.1 or 0.1)
                 branch.leaf.graphNode.x = level.plantAttachmentPosition[1] + branch._nextX + 25 + 90*math.cos(angle)
                 branch.leaf.graphNode.y = level.plantAttachmentPosition[2] + branch._nextY - 200 + 90*math.sin(angle)
             end
         end
+    end
+    -- Check for deleted plants
+    local deleteList = {}
+    for i = level.rightEntryPoint.id+1, #moveGraph.nodes do
+        if moveGraph.nodes[i].stemIndex then
+            if not plant.branches[moveGraph.nodes[i].stemIndex][moveGraph.nodes[i].branchIndex] then 
+                table.insert(deleteList, i)
+            end
+        end
+    end
+    for i = #deleteList,1,-1 do
+        moveGraph.remove(deleteList[i])
     end
 end

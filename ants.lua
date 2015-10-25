@@ -4,7 +4,7 @@ do
 
 	ants = {
 		list = {},
-		speed = 5.0,
+		speed = 1.0,
 		gravity = 800,
 		eatDuration = 5.0,
 	}
@@ -80,20 +80,20 @@ do
 				-- Movement on Graph
 				ant.prevx = ant.x
 				ant.prevy = ant.y
-					local speed = (ant.eating and 0.0 or ant.speed) * (love.keyboard.isDown("lshift") and 20 or 1)
+					local speed = (ant.eating and 0.0 or ant.speed) * (love.keyboard.isDown("lshift") and 6 or 1)
 				local change = moveGraph.proceed(ant, speed, ant.goingHome)
-				if ant.eating then
-					print("Ant Eating!!!")
-				else
-					print("    Ant walking, " .. math.floor(ant.x) .. ", " .. math.floor(ant.y) .. 
-						", " .. math.floor(ant.vx) .. ", " .. math.floor(ant.vy))
-				end
 				-- fix ants going below ground
 				if ant.toPoint.tp == "ground" and ant.fromPoint.tp == "ground" and simulationDt > 0 then
 					if ant.vx >  0.1 then ant.mirror = true end
 					if ant.vx < -0.1 then ant.mirror = false end
 				else
 					if ant.fromPoint.tp == "leaf" then plant.sadFace() end
+				end
+				-- Apply force to leaves and branches
+				if (ant.toPoint.tp == "plant" or ant.toPoint.tp == "leaf") and ant.toPoint.branchIndex then
+					if ant.toPoint.branchIndex >= 2 then
+        				applyForce(plant.branches[ant.toPoint.stemIndex], ant.toPoint.branchIndex,  0.0, 0.01,  1.0, simulationDt)
+					end
 				end
 				-- eating vs movement
 				if not ant.eating then
