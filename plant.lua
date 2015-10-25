@@ -638,7 +638,7 @@ function plant.updateGraph()
             if not branch.graphNode then 
                 -- create new branch node
                 local parent = ((j == 1) and plant.stem[i].graphNode or plant.branches[i][j-1].graphNode)
-                branch.graphNode = moveGraph.append(x, y,  parent, 20, "plant") 
+                branch.graphNode = moveGraph.append(x, y,  parent, 200, "plant") 
                 branch.graphNode.stemIndex = i
                 branch.graphNode.branchIndex = j
             end
@@ -651,7 +651,7 @@ function plant.updateGraph()
                 y = y + 90*math.sin(angle)
                 if not branch.leaf.graphNode then
                     -- create new leaf node 
-                    branch.leaf.graphNode = moveGraph.append(x,y, branch.graphNode, 40, "leaf")
+                    branch.leaf.graphNode = moveGraph.append(x,y, branch.graphNode, 400, "leaf")
                     branch.leaf.graphNode.stemIndex = i
                     branch.leaf.graphNode.branchIndex = j 
                 end
