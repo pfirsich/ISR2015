@@ -35,7 +35,7 @@ Markus:
 Partikel: Schuh, Mampfen, Levelup, neue Dinger
 
 ----------------
-
+zahlen aufploppen
 
 
 Wetter (1h)
@@ -43,3 +43,10 @@ Raupe (wenn Lukas es packt) (1h)
 Pilze (1h)
 Spinne (1,5)
 Giftige Blätter
+
+-----------------
+
+augen fokussieren nicht recht
+preise steigen zu schnell
+stacheln ganzen unten
+faden von text und knobs ist zu langsam
