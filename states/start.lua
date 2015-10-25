@@ -40,8 +40,11 @@ function startState.update()
 end
 
 function startState.keypressed(key)
-	lush.play("shoe.wav")
-	delay(function() shoeFall = true end, 2.0)
+    if not played then 
+        played = true
+        lush.play("shoe.wav")
+        delay(function() shoeFall = true end, 2.0)
+    end
 end
 
 function startState.draw()

@@ -58,9 +58,9 @@ do
 			end
 			-- update size
 			if self.hovered then
-				if self.zoomedIn < 1 then self.zoomedIn = clamp(self.zoomedIn + knobs.dt*3.0, 0, 1) end
+				if self.zoomedIn < 1 then self.zoomedIn = clamp(self.zoomedIn + simulationDt*3.0, 0, 1) end
 			else
-				if self.zoomedIn > 0 then self.zoomedIn = clamp(self.zoomedIn - knobs.dt*3.0, 0, 1) end
+				if self.zoomedIn > 0 then self.zoomedIn = clamp(self.zoomedIn - simulationDt*3.0, 0, 1) end
 			end
 		
 			-- Draw surrounding circle
@@ -107,7 +107,7 @@ do
 					-- Hovering and interaction
 					if knobs.mouseInSphere(cx, cy, rad) then
 						if p >= 1 then
-							content[i].highlight = clamp(content[i].highlight + knobs.dt*3.5, 0, 1)
+							content[i].highlight = clamp(content[i].highlight + simulationDt*3.5, 0, 1)
 							if content[i].textWidget then 
 								textWidgets.show(content[i].textWidget, x + dis*math.sin(baseAngle), y + dis*math.cos(baseAngle)-150) 
 							end
@@ -132,7 +132,7 @@ do
 						 end
 						if knobs.mouse.leftclick == 2 then knobs.mouse.leftclick = 1 end -- hax
 					else
-						content[i].highlight = clamp(content[i].highlight - knobs.dt*1.6, 0, 1)
+						content[i].highlight = clamp(content[i].highlight - simulationDt*1.6, 0, 1)
 					end
 				end
 			end

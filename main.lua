@@ -60,6 +60,7 @@ function love.textinput(text)
 end
 
 function love.draw()
+    drawDt = love.timer.getDelta()
     if currentState.draw then currentState.draw() end
 end
 

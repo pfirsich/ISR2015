@@ -66,7 +66,7 @@ do
 	function textWidgets.show(widget, x, y)
 		widget.x = x
 		widget.y = y
-		widget.visible = clamp(widget.visible + simulationDt*2.5, 0, 1.2)
+		widget.visible = clamp(widget.visible + drawDt*2.5, 0, 1.2)
 	end
 
 	function textWidgets.draw()
@@ -109,7 +109,7 @@ do
 					end
 				end
 				-- Hide it
-				widget.visible = clamp(widget.visible - simulationDt*1.2, 0, 1.2)
+				widget.visible = clamp(widget.visible - drawDt*1.2, 0, 1.2)
 			end
 		end
 	end
