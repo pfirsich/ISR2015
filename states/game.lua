@@ -143,5 +143,5 @@ function gameState.draw()
 end
 
 function gameState.keypressed(key)
-    if key == "," then resources.h2o = resources.h2o + 100; resources.glucose = resources.glucose + 100; resources.minerals = resources.minerals + 100; end
+    --if key == "," then resources.h2o = resources.h2o + 100; resources.glucose = resources.glucose + 100; resources.minerals = resources.minerals + 100; end
 end 
