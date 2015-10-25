@@ -2,7 +2,7 @@ function love.conf(t)
 	t.window.width = 1600 				-- The window width (number)
 	t.window.height = 900				-- The window height (number)
 	t.window.vsync = false				-- Enable vertical sync (true/false)
-	t.window.fullscreen = false			-- Enable fullscreen (true/false)
+	t.window.fullscreen = true			-- Enable fullscreen (true/false)
 	t.window.fsaa = 0					-- The number of samples to use with multi-sampled antialiasing (number)
 	t.window.display = 1				-- Index of the monitor to show the window in (number)
 	t.window.highdpi = false			-- Enable high-dpi mode for the window on a Retina display (true/false).

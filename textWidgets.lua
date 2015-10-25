@@ -10,9 +10,9 @@ do
 
 
 	resourceInfo = {
-		h2o = {name = "H2O", icon = love.graphics.newImage("images/UI/h2oicon.png"), color = {80,120,255}},
-		glucose = {name = "Glucose", icon = love.graphics.newImage("images/UI/glucoseicon.png"), color = {240,230,22}},
-		minerals = {name = "Minerals", icon = love.graphics.newImage("images/UI/mineralsicon.png"), color = {160,110,32}},
+		h2o = {name = "H2O", icon = love.graphics.newImage("images/UI/H2OIcon.png"), color = {80,120,255}},
+		glucose = {name = "Glucose", icon = love.graphics.newImage("images/UI/GlucoseIcon.png"), color = {240,230,22}},
+		minerals = {name = "Minerals", icon = love.graphics.newImage("images/UI/MineralsIcon.png"), color = {160,110,32}},
 	}
 
 	function textWidgets.load()
