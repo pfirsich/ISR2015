@@ -7,6 +7,7 @@ function gameState.load()
     plant.appendToGraph()
     ants.testInit()
     plant.strikeRoots()
+    background.load()
 end
 
 function gameState.onEnter()
@@ -32,6 +33,7 @@ function gameState.draw()
     love.graphics.rectangle("fill", 0, 0, love.window.getWidth(), love.window.getHeight())
     love.graphics.setColor(255, 255, 255, 255)
 
+    background.draw()
     camera.push()
     plant.draw()
 

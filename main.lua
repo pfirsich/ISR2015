@@ -10,6 +10,7 @@ require "plant"
 require "face"
 require "ants"
 require "director"
+require "background"
 lush = require "lush"
 
 currentState = {time = 0} -- empty state, does nothing
