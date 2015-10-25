@@ -126,7 +126,6 @@ do
 				else
 					local leaf = plant.branches[ant.fromPoint.stemIndex][ant.fromPoint.branchIndex].leaf
 					leaf.health = leaf.health - simulationDt / 13.0 -- 2.5 * 5
-					print(leaf.health)
 					-- Flower is shocked
 					plant.screamFace()
 					-- Affect leaf
