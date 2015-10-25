@@ -23,7 +23,6 @@ function gameState.update()
     ants.testUpdate()
     -- Camera Movement
     camera.control(simulationDt, 1000)
-    knobs.update(simulationDt)
     director(simulationDt)
 
     local leaves = 0
@@ -53,6 +52,7 @@ resources = {
 
 
 function gameState.draw()
+    knobs.update(simulationDt) -- sorry but this solves the problem
 	-- Game World
     love.graphics.setColor(100,136,240)
     love.graphics.rectangle("fill", 0, 0, love.window.getWidth(), love.window.getHeight())

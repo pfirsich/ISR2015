@@ -21,9 +21,9 @@ do
 		textWidgets.width = textWidgets.imageScale * textWidgets.image:getWidth()
 		textWidgets.height = textWidgets.imageScale * textWidgets.image:getHeight()
 		-- Branch [color:255,0,0,textWidgets.alpha]This is red text.[n][color:255,255,255,textWidgets.alpha]In a new line, I include an inside the text
-		textWidgets.list["createBranch"] = {caption = "Create Branch", cost = {50,50,0, 15,15,0},
+		textWidgets.list["createBranch"] = {caption = "Create Branch", cost = {50,50,0, 5,5,0},
 			text="Add a new branch to your plant which will grow eventually and provide more leaf growth spots."}
-		textWidgets.list["createLeaf"] = {caption = "Create Leaf", cost = {30,30,0, 10,10,0},
+		textWidgets.list["createLeaf"] = {caption = "Create Leaf", cost = {30,30,0, 5,5,0},
 			text="Add a leaf to your plant which will generate valuable glucose"}
 		textWidgets.list["upgradePoisonLeaf"] = {caption = "Create Poisoned Leaf", cost = {30,60,20, 10,20,10},
 			text="Grow a poisonous leaf that will hurt any foes eating from it. Will generate fewer glucose"}

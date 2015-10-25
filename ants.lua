@@ -38,10 +38,10 @@ do
 
 
 	function ants.spawn(delaySeconds, count)
-		if count and count <= 0 then return end
+		count = count or 1
+		if count <= 0 then return end
 		if delaySeconds then
-			if #plant.stem <= 4 then return end
-			count = count or 1
+			if #plant.stem < 4 then return end
 			delay(function() ants.spawn(); ants.spawn(delaySeconds, count-1) end, delaySeconds)
 			return
 		end

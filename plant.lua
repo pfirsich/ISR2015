@@ -521,7 +521,6 @@ function plant.draw()
                         branchSeg.creationTime = currentState.time
                         branchSeg.velocity = 0
                         increaseCost("createBranch")
-                        ants.spawn(2)
                         plant.branches[i] = {branchSeg}
                         plant.branches[i].count = 1
                         plant.happyFace()
@@ -585,7 +584,7 @@ function plant.draw()
                             thorn.flip = (t % 2 == 0) and 1 or -1
                             thorn.variance = love.math.random()
                             increaseCost("growThorns")
-                            ants.spawn(2, 4)
+                            ants.spawn(2, 2)
                             plant.stem[i].thorns[t] = thorn
                         end 
                     end}
