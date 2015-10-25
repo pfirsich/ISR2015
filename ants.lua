@@ -177,14 +177,17 @@ do
 					-- Check Ground
 					local gh = level.getGroundHeight(ant.x)
 					if ant.y > gh then
-						ant.y = gh
-						ant.onGraph = true
-						ant.fromPoint, ant.toPoint, ant.p = level.getGroundNode(ant.x)
-						ant.vy = 0.0
-						if ant.x > 0 then
-							ant.mirror = true
-						else
-							ant.mirror = false
+						local killed = ants.damage(ant, ant.vy*0.0005)
+						if not killed then
+							ant.y = gh
+							ant.onGraph = true
+							ant.fromPoint, ant.toPoint, ant.p = level.getGroundNode(ant.x)
+							ant.vy = 0.0
+							if ant.x > 0 then
+								ant.mirror = true
+							else
+								ant.mirror = false
+							end
 						end
 					end
 				end
@@ -226,6 +229,7 @@ do
 		ant.life = 0.0
 		ant.onGraph = false
 		ant.damageIndicator = 0.0
+		if resources then resources.minerals = resources.minerals + 10 end
 	end
 
 	function ants.draw()
