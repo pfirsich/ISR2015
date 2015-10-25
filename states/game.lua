@@ -1,4 +1,5 @@
 gameState = {time = 0}
+marker = {}
 
 function gameState.load()
     ants.clear()
@@ -12,6 +13,7 @@ function gameState.onEnter()
 end
 
 function gameState.update()
+    marker = {}
     plant.update(simulationDt)
     plant.updateGraph()
     ants.update()
@@ -35,6 +37,9 @@ function gameState.draw()
     level.draw()
     ants.draw()
     --moveGraph.debugDraw()
+    for i = 1, #marker, 2 do 
+        love.graphics.circle("fill", marker[i], marker[i+1], 20)
+    end 
     camera.pop()
 
     -- Interface

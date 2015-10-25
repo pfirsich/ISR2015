@@ -90,11 +90,17 @@ do
 					if ant.fromPoint.tp == "leaf" then plant.sadFace() end
 				end
 				-- Apply force to leaves and branches
-				if (ant.toPoint.tp == "plant" or ant.toPoint.tp == "leaf") and ant.toPoint.branchIndex then
-					if ant.toPoint.branchIndex >= 2 then
-        				applyForce(plant.branches[ant.toPoint.stemIndex], ant.toPoint.branchIndex,  0.0, 0.01,  1.0, simulationDt)
+				if ant.toPoint.tp == "plant" and ant.toPoint.branchIndex then
+					if ant.toPoint.branchIndex >= 1 and ant.toPoint.branchIndex < #plant.branches[ant.toPoint.stemIndex] then
+        				applyForce(plant.branches[ant.toPoint.stemIndex], ant.toPoint.branchIndex+1,  0.0, 0.01,  1.0, simulationDt)
 					end
 				end
+				if ant.toPoint.tp == "leaf" and ant.toPoint.branchIndex then 
+					if ant.toPoint.branchIndex >= 2 then 
+						applyForce(plant.branches[ant.toPoint.stemIndex], ant.toPoint.branchIndex,  0.0, 0.01,  1.0, simulationDt)
+					end 
+				end 
+				-- TODO leaf noch!
 				-- eating vs movement
 				if not ant.eating then
 					ant.vx = (ant.x - ant.prevx)/simulationDt
@@ -117,12 +123,13 @@ do
 						end
 					end
 				else
+					local leaf = plant.branches[ant.fromPoint.stemIndex][ant.fromPoint.branchIndex].leaf
+					leaf.health = leaf.health - simulationDt / 13.0 -- 2.5 * 5
+					print(leaf.health)
 					-- Flower is shocked
 					plant.screamFace()
 					-- Affect leaf
-					local leafGone = false -- or leaf already gone, stored in some value?
-					-- ...
-					-- something someting leafGone = true
+					local leafGone = leaf.health < 0.0
 					-- Eating update
 					ant.eatingTimeRemaining = ant.eatingTimeRemaining - simulationDt
 					if ant.eatingTimeRemaining <= 0.0 or leafGone then

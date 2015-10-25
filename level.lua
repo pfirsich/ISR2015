@@ -5,8 +5,8 @@ do
 
     level = {}
 
-    local levelWidth = 6000
-    local levelHeightFactor = 1500
+    local levelWidth = 3500
+    local levelHeightFactor = 750
     local groundSegments = 120
     groundHeight = 700
     local textureScale = 1.5
@@ -59,7 +59,7 @@ do
         groundMesh = love.graphics.newMesh(vertices, groundTexture, "triangles")
         
         local groundFanVertices = buildFanGeometry(groundSurfacePoints, groundFanOffset, groundFanHeight)
-        for i = 1, #groundFanVertices do groundFanVertices[i][3] = groundFanVertices[i][3] / groundFanImage:getWidth() * groundFanTextureScale + 0.2 end
+        for i = 1, #groundFanVertices do groundFanVertices[i][3] = groundFanVertices[i][3] / groundFanImage:getWidth() * groundFanTextureScale + 0.1 end
         groundFanMesh = love.graphics.newMesh(groundFanVertices, groundFanImage, "triangles")
 
         local edgeMask = {}

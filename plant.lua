@@ -23,7 +23,7 @@ uniform float damage;
 
 vec4 effect(vec4 color, Image texture, vec2 textureCoords, vec2 screenCoords) {
     vec4 col = Texel(texture, textureCoords);
-    return vec4(col.rgb, col.a * step(Texel(noiseMap, textureCoords + offset).r, 1.0 - damage));
+    return vec4(col.rgb * color.rgb, col.a * color.a * step(Texel(noiseMap, textureCoords + offset).r, 1.0 - damage));
 }
 ]])
 local leafDamageMap = love.graphics.newImage("images/leafdamage.png")
@@ -225,10 +225,24 @@ function plant.update(dt)
             branchCursorX, branchCursorY = nextBranchX, nextBranchY
             totalBranchAngle = nextBranchAngle
 
-            if plant.branches[i][j].leaf then 
-                local angle = plant.branches[i][j]._totalAngle
-                plant.branches[i][j].leaf._x = math.cos(angle) * plant.branches[i][j].length + plant.branches[i][j]._x
-                plant.branches[i][j].leaf._y = math.sin(angle) * plant.branches[i][j].length + plant.branches[i][j]._y
+            local leaf = plant.branches[i][j].leaf
+            if leaf then 
+                if leaf.fallStart then 
+                    leaf._y = leaf._y + leaf.fallAccell*(currentState.time - leaf.fallStart)*(currentState.time - leaf.fallStart)
+                    leaf.alpha = leaf.alpha - dt
+                    if leaf.alpha < 0 then plant.branches[i][j].leaf = nil end 
+                else 
+                    local angle = plant.branches[i][j]._totalAngle
+                    leaf._x = math.cos(angle) * plant.branches[i][j].length + plant.branches[i][j]._x
+                    leaf._y = math.sin(angle) * plant.branches[i][j].length + plant.branches[i][j]._y
+
+                    if leaf.health <= 0.0 then 
+                        leaf.fallStart = currentState.time
+                        leaf.fallAccell = randf(1.0, 1.2)
+                        leaf.alpha = 1.0
+
+                    end
+                end
             end 
         end 
 
@@ -346,12 +360,6 @@ function interpStalk(segments, i, smoothness)
 end
 
 function plant.draw()
-    love.graphics.push()
-    love.graphics.translate(0, 0)
-    love.graphics.scale(1.0)
-    love.graphics.setColor(0, 255, 0)
-    local start = love.timer.getTime()
-
     local stemPoints = {}
     for i = 1, #plant.stem do 
         local stemSamples = 10
@@ -364,6 +372,7 @@ function plant.draw()
             local branchSmoothness = 20
             sampleLine(branchPoints, branchSamples, interpStalk(plant.branches[i], j, branchSmoothness), j == #plant.branches[i])
         end 
+        love.graphics.setColor(255, 255, 255, 255)
         if #branchPoints > 0 then drawStalk(branchPoints, 25, 5) end
 
         for j = 1, #plant.branches[i] do 
@@ -375,9 +384,10 @@ function plant.draw()
         for j = #plant.branches[i], 1, -1 do 
             local leaf = plant.branches[i][j].leaf
             if leaf then 
+                love.graphics.setColor(255, 255, 255, (leaf.alpha or 1.0) * 255)
                 local scale = leaf.scale
                 leafShader:send("offset", leaf.damageOffset or {0, 0})
-                leafShader:send("damage", (1.0 - leaf.health) * 0.3)
+                leafShader:send("damage", (1.0 - leaf.health) * 0.4)
                 love.graphics.draw(plant.leafImage, leaf._x, leaf._y, leaf.angle + plant.branches[i][j]._totalAngle, 
                                    scale, scale * (leaf.flip and -1 or 1), 25, 128)
             end 
@@ -385,6 +395,7 @@ function plant.draw()
         love.graphics.setShader()
     end
 
+    love.graphics.setColor(255, 255, 255, 255)
     drawStalk(stemPoints, 50, 10)
     love.graphics.setColor(255, 0, 0)
     for i = 1, #stemPoints, 2 do 
@@ -395,9 +406,8 @@ function plant.draw()
         --love.graphics.circle("fill", plant.stem[i]._x, plant.stem[i]._y, 8, 12)
     end 
 
-    --print("taken: ", 1000.0 * (love.timer.getTime() - start))
     local headAngle = plant.danceAmplitude * 0.01
-    love.graphics.setColor(255, 255, 255)
+    love.graphics.setColor(255, 255, 255, 255)
     local flowerHeadScale = lerp(0.3, 0.5, (#plant.stem - 3) / 7)
     local img = plant.headImages[plant.headImageIndex]
     love.graphics.draw(img, stemPoints[#stemPoints-1], stemPoints[#stemPoints], headAngle, 
@@ -427,8 +437,6 @@ function plant.draw()
         relX, relY = 0, 1
     end 
     drawMouth(plant.mouthOpen, plant.mouthScale, plant.blink, relX, relY)
-    love.graphics.pop()
-
     love.graphics.pop()
 
     love.graphics.push()
@@ -486,7 +494,7 @@ function plant.draw()
                         -- local sx, sy = camera.worldToScreen(plant.branches[i][j]._nextX, plant.branches[i][j]._nextY) 
                         -- knobs.draw(100*i + j, sx, sy, {
                         --     {textWidget = textWidgets.list["dropLeaf"], clickCallback = function()
-                        --         plant.branches[i][j].leaf.wither = true
+                        --         plant.branches[i][j].leaf.health = 0.0
                         --     end}
                         -- })
                     end 
@@ -526,37 +534,43 @@ end
 function plant.updateGraph()
     -- Stem
     for i = 2, #plant.stem do
+        local x = plant.stem[i]._x
+        local y = plant.stem[i]._y
         if not plant.stem[i].graphNode then 
             -- Create new Stem node
-            plant.stem[i].graphNode = moveGraph.append(0,0, plant.stem[i-1].graphNode, 100, "plant") 
+            plant.stem[i].graphNode = moveGraph.append(x,y, plant.stem[i-1].graphNode, 100, "plant") 
         end
         -- Update stem position
-        plant.stem[i].graphNode.x = level.plantAttachmentPosition[1] + plant.stem[i]._x + 25
-        plant.stem[i].graphNode.y = level.plantAttachmentPosition[2] + plant.stem[i]._y - 210
+        plant.stem[i].graphNode.x = x
+        plant.stem[i].graphNode.y = y
         -- Branches
         for j = 1, #plant.branches[i] do
             local branch = plant.branches[i][j]
+            local x = branch._nextX
+            local y = branch._nextY
             if not branch.graphNode then 
                 -- create new branch node
                 local parent = ((j == 1) and plant.stem[i].graphNode or plant.branches[i][j-1].graphNode)
-                branch.graphNode = moveGraph.append(0,0, parent, 200, "plant") 
+                branch.graphNode = moveGraph.append(x, y,  parent, 200, "plant") 
                 branch.graphNode.stemIndex = i
                 branch.graphNode.branchIndex = j
             end
             -- update branch position
-            branch.graphNode.x = level.plantAttachmentPosition[1] + branch._nextX + 25
-            branch.graphNode.y = level.plantAttachmentPosition[2] + branch._nextY - 200
+            branch.graphNode.x = x
+            branch.graphNode.y = y 
             if branch.leaf then
+                local angle = branch.leaf.angle + branch._totalAngle + (branch.leaf.flip and -0.1 or 0.1)
+                x = x + 90*math.cos(angle)
+                y = y + 90*math.sin(angle)
                 if not branch.leaf.graphNode then
                     -- create new leaf node 
-                    branch.leaf.graphNode = moveGraph.append(0,0, branch.graphNode, 500, "leaf")
+                    branch.leaf.graphNode = moveGraph.append(x,y, branch.graphNode, 400, "leaf")
                     branch.leaf.graphNode.stemIndex = i
                     branch.leaf.graphNode.branchIndex = j 
                 end
                 -- update leaf position
-                local angle = branch.leaf.angle + branch._totalAngle + (branch.leaf.flip and -0.1 or 0.1)
-                branch.leaf.graphNode.x = level.plantAttachmentPosition[1] + branch._nextX + 25 + 90*math.cos(angle)
-                branch.leaf.graphNode.y = level.plantAttachmentPosition[2] + branch._nextY - 200 + 90*math.sin(angle)
+                branch.leaf.graphNode.x = x
+                branch.leaf.graphNode.y = y
             end
         end
     end

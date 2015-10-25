@@ -37,6 +37,19 @@ function director(dt)
             lush.play("levelup.wav")
     	end 
 
+    	if #plant.stem == 3 then 
+    		nextAntSpawn = 2.0 + currentState.time
+    	end 
+
     	plant.update(dt)
+    end 
+
+    if #plant.stem >= 3 then 
+    	local interval = 20.0
+    	if nextAntSpawn < currentState.time then 
+    		nextAntSpawn = currentState.time + lerp(20.0, 4.0, (#plant.stem - 3)/7) + love.math.random()
+    		ants.spawn()
+    		lush.play("enemy_entry.wav") 
+    	end 
     end 
 end 
