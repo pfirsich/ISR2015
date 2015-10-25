@@ -1,7 +1,7 @@
 function love.conf(t)
 	t.window.width = 1600 				-- The window width (number)
 	t.window.height = 900				-- The window height (number)
-	t.window.vsync = false				-- Enable vertical sync (true/false)
+	t.window.vsync = true				-- Enable vertical sync (true/false)
 	t.window.fullscreen = false			-- Enable fullscreen (true/false)
 	t.window.fsaa = 0					-- The number of samples to use with multi-sampled antialiasing (number)
 	t.window.display = 1				-- Index of the monitor to show the window in (number)
@@ -9,7 +9,7 @@ function love.conf(t)
 
 	t.identity = "(PL)ANT LIFE"               -- The name of the save directory (string)
 	t.version = "0.9.2"                -- The LÖVE version this game was made for (string)
-	t.console = false                  -- Attach a console (boolean, Windows only)
+	t.console = true                  -- Attach a console (boolean, Windows only)
 
 	t.window.title = "(PL)ANT LIFE"       -- The window title (string)
 	t.window.icon = nil                -- Filepath to an image to use as the window's icon (string)

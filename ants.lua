@@ -121,7 +121,7 @@ do
 						end 
 					end 
 					-- Damaged by Thorns?
-					if ant.fromPoint.stemIndex and not ant.fromPoint.branchIndex then
+					if ant.fromPoint.stemIndex and not ant.fromPoint.branchIndex and ant.toPoint.stemIndex and not ant.toPoint.branchIndex then
 						-- ant on stem 
 						local index = ((ant.vy < 0) and ant.fromPoint.stemIndex or ant.toPoint.stemIndex)
 						if plant.stem[index] and plant.stem[index].thorns then

@@ -159,3 +159,13 @@ function gameState.draw()
     end 
     love.graphics.setFont(oldFont)
 end
+
+
+
+function gameState.keypressed(key)
+    if key == "," then
+        for key,value in pairs(resources) do
+            resources[key] = resources[key] + 100
+        end
+    end
+end

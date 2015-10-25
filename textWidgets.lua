@@ -48,6 +48,7 @@ do
 	end
 
 	function increaseCost(key)
+		print("Increasing cost of " .. key)
 		local res = textWidgets.list[key]
 		for i = 1,3 do
 			local add = res.cost[i+3]
@@ -57,6 +58,7 @@ do
 			else
 				-- positive num to add
 				res.cost[i] = res.cost[i] + add
+				print("Increased by " .. add .. " to " .. res.cost[i])
 			end
 		end
 	end
