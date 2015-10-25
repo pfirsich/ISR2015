@@ -16,6 +16,19 @@ plant.blink = 0.0
 plant.nextBlink = 0
 plant.targetBlink = 0.0
 
+local leafShader = love.graphics.newShader([[
+uniform Image noiseMap;
+uniform vec2 offset;
+uniform float damage;
+
+vec4 effect(vec4 color, Image texture, vec2 textureCoords, vec2 screenCoords) {
+    vec4 col = Texel(texture, textureCoords);
+    return vec4(col.rgb, col.a * step(Texel(noiseMap, textureCoords + offset).r, 1.0 - damage));
+}
+]])
+local leafDamageMap = love.graphics.newImage("images/leafdamage.png")
+leafDamageMap:setWrap("repeat", "repeat")
+
 function plant.happyFace()
     plant.targetMouthOpen = 1.0
     plant.targetMouthScale = 1.0
@@ -237,9 +250,9 @@ function plant.update(dt)
 
             local leaf = plant.branches[i][j].leaf
             if leaf then 
-                local inertia = 0.1
+                local inertia = 0.5
                 local angle = plant.branches[i][j]._totalAngle + leaf.angle
-                local relX, relY = math.cos(angle) * love.window.getWidth() * leaf.scale, math.sin(angle) * love.window.getWidth() * leaf.scale
+                local relX, relY = math.cos(angle) * plant.leafImage:getWidth() * leaf.scale, math.sin(angle) * plant.leafImage:getWidth() * leaf.scale
                 --local relX, relY = leaf._x - plant.branches[i][j]._nextX, leaf._y - plant.branches[i][j]._nextY
                 leaf.velocity = leaf.velocity + (relX * windY - relY * windX) * dt / inertia
             end 
@@ -357,14 +370,19 @@ function plant.draw()
             --love.graphics.circle("fill", plant.branches[i][j]._x, plant.branches[i][j]._y, 20, 12)
         end 
 
+        love.graphics.setShader(leafShader)
+        leafShader:send("noiseMap", leafDamageMap)
         for j = #plant.branches[i], 1, -1 do 
             local leaf = plant.branches[i][j].leaf
             if leaf then 
-                local scale = plant.branches[i][j].leaf.scale
+                local scale = leaf.scale
+                leafShader:send("offset", leaf.damageOffset or {0, 0})
+                leafShader:send("damage", (1.0 - leaf.health) * 0.3)
                 love.graphics.draw(plant.leafImage, leaf._x, leaf._y, leaf.angle + plant.branches[i][j]._totalAngle, 
                                    scale, scale * (leaf.flip and -1 or 1), 25, 128)
             end 
         end 
+        love.graphics.setShader()
     end
 
     drawStalk(stemPoints, 50, 10)
@@ -378,20 +396,21 @@ function plant.draw()
     end 
 
     --print("taken: ", 1000.0 * (love.timer.getTime() - start))
+    local headAngle = plant.danceAmplitude * 0.01
     love.graphics.setColor(255, 255, 255)
-    local flowerHeadScale = 0.3
+    local flowerHeadScale = lerp(0.3, 0.5, (#plant.stem - 3) / 7)
     local img = plant.headImages[plant.headImageIndex]
-    love.graphics.draw(img, stemPoints[#stemPoints-1], stemPoints[#stemPoints], plant.danceAmplitude * 0.01, 
-                       flowerHeadScale,flowerHeadScale, 512, 768)
+    love.graphics.draw(img, stemPoints[#stemPoints-1], stemPoints[#stemPoints], headAngle, 
+                       flowerHeadScale, flowerHeadScale, 512, 768)
 
-    local faceOffset = {0, 0,    -28, -90,   0, -20}
-    local scale = {0.0,   0.6,   0.9}
+    local faceOffset = {0, 0,    -92*flowerHeadScale, -300*flowerHeadScale,   0, -67*flowerHeadScale}
+    local scale = {0.0,   2.0*flowerHeadScale,   3.0*flowerHeadScale}
 
     love.graphics.push()
     local mouthX, mouthY = stemPoints[#stemPoints-1], stemPoints[#stemPoints]
-    mouthX, mouthY = mouthX + faceOffset[plant.headImageIndex*2-1+0], mouthY + faceOffset[plant.headImageIndex*2-1+1]
     love.graphics.translate(mouthX, mouthY)
-    love.graphics.rotate(plant.danceAmplitude * 0.01)
+    love.graphics.rotate(headAngle)
+    love.graphics.translate(faceOffset[plant.headImageIndex*2-1+0], faceOffset[plant.headImageIndex*2-1+1])
     love.graphics.scale(scale[plant.headImageIndex], scale[plant.headImageIndex])
     mouthX, mouthY = camera.worldToScreen(mouthX, mouthY)
     local relX, relY = love.mouse.getX() - mouthX, love.mouse.getY() - mouthY
@@ -455,6 +474,8 @@ function plant.draw()
                                 leaf.targetScale = randf(0.2, 0.25)
                                 leaf.velocity = 0
                                 leaf.creationTime = currentState.time
+                                leaf.health = 1.0
+                                leaf.damageOffset = {love.math.random(), love.math.random()}
                                 plant.branches[i][j].leaf = leaf
                                 plant.happyFace()
                                 plant.update(simulationDt)
@@ -462,12 +483,12 @@ function plant.draw()
                             end}
                         })
                     else -- level up + drop leaves
-                        local sx, sy = camera.worldToScreen(plant.branches[i][j]._nextX, plant.branches[i][j]._nextY) 
-                        knobs.draw(100*i + j, sx, sy, {
-                            {textWidget = textWidgets.list["dropLeaf"], clickCallback = function()
-                                plant.branches[i][j].leaf.wither = true
-                            end}
-                        })
+                        -- local sx, sy = camera.worldToScreen(plant.branches[i][j]._nextX, plant.branches[i][j]._nextY) 
+                        -- knobs.draw(100*i + j, sx, sy, {
+                        --     {textWidget = textWidgets.list["dropLeaf"], clickCallback = function()
+                        --         plant.branches[i][j].leaf.wither = true
+                        --     end}
+                        -- })
                     end 
                 end 
             end 

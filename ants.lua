@@ -16,11 +16,11 @@ do
 	end
 
 	function ants.testInit()
-		ants.spawn()
+		--ants.spawn()
 	end
 
 	function ants.testUpdate()
-		if love.math.random() < 0.002 then ants.spawn() end
+		--if love.math.random() < 0.002 then ants.spawn() end
 	end
 
 

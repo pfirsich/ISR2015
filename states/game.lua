@@ -34,7 +34,7 @@ function gameState.draw()
 
     level.draw()
     ants.draw()
-    moveGraph.debugDraw()
+    --moveGraph.debugDraw()
     camera.pop()
 
     -- Interface

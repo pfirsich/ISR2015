@@ -60,6 +60,6 @@ function drawEllipse(x, y, r, sx, sy, mode)
     love.graphics.push()
     love.graphics.translate(x, y)
     love.graphics.scale(sx, sy)
-    love.graphics.circle(mode, 0, 0, r, 16)
+    love.graphics.circle(mode, 0, 0, r, 24)
     love.graphics.pop()
 end 
