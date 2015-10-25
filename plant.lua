@@ -670,7 +670,7 @@ function plant.updateGraph()
     -- Check for deleted plants
     local deleteList = {}
     for i = #moveGraph.nodes, level.rightEntryPoint.id+1, -1 do
-        if moveGraph.nodes[i].branchIndexIndex then
+        if moveGraph.nodes[i].branchIndex then
             if not plant.branches[moveGraph.nodes[i].stemIndex][moveGraph.nodes[i].branchIndex] then 
                 moveGraph.remove(i)
             end

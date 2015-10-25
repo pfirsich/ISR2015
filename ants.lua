@@ -40,6 +40,7 @@ do
 	function ants.spawn(delaySeconds, count)
 		if count and count <= 0 then return end
 		if delaySeconds then
+			if #plant.stem <= 4 then return end
 			count = count or 1
 			delay(function() ants.spawn(); ants.spawn(delaySeconds, count-1) end, delaySeconds)
 			return
@@ -161,6 +162,12 @@ do
 							plant.screamFace()
 							-- Affect leaf
 							local leafGone = leaf.health < 0.0
+							-- Fall down
+							if leafGone then
+								ant.onGraph = false
+								ant.eating = false
+								ant.goingHome = true
+							end
 						end
 						-- Eating update
 						ant.eatingTimeRemaining = ant.eatingTimeRemaining - simulationDt
