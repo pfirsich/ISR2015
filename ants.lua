@@ -13,6 +13,14 @@ do
 	function ants.load()
 		ants.image = love.graphics.newImage("images/ant.png")
 		ants.list = {}
+		ants.walkImages = {}
+		for i = 1,24 do
+			ants.walkImages[i] = love.graphics.newImage("images/ant/walk/Ant_" .. (i-1) .. ".png")
+		end
+		ants.eatImages = {}
+		for i = 1,24 do
+			ants.eatImages[i] = love.graphics.newImage("images/ant/eat/Ant_" .. (i-1) .. ".png")
+		end
 	end
 
 	function ants.testInit()
@@ -228,10 +236,23 @@ do
 	end
 
 		function ants.drawAnt(ant)
-			local scx = ant.mirror and -0.3 or 0.3
+			local sc = 0.8
+			local scx = ant.mirror and -sc or sc
 			local c = 255-200*ant.damageIndicator
 			love.graphics.setColor(255, c, c, c*ant.alpha)
-			love.graphics.draw(ants.image, ant.x, ant.y, ant.angle + (ant.mirror and 0 or math.pi), scx, 0.3, ants.image:getWidth()/2, ants.image:getHeight())
+			-- figure out which image to use
+			local img
+			if ant.eating then
+				img = ants.eatImages[1 + (math.floor(currentState.time*40) % 24)]
+			else
+				if ant.onGraph then
+					img = ants.walkImages[1 + (math.floor(currentState.time*40) % 24)]
+				else
+					-- Falling
+					img = ants.walkImages[1]
+				end
+			end
+			love.graphics.draw(img, ant.x, ant.y, ant.angle + (ant.mirror and 0 or math.pi), scx, sc, img:getWidth()/2, img:getHeight()*0.7)
 		end
 
 
