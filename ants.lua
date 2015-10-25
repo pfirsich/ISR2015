@@ -57,6 +57,9 @@ do
 			vx = 0.0,
 			vy = 0.0,
 			inertia = 0.97,
+			damageIndicator = 0.0,
+			life = 1.0,
+			alpha = 1.0, -- used to fadeOut when killing
 		}
 		table.insert(ants.list, ant)
 		return ant
@@ -75,104 +78,159 @@ do
 	end
 
 		function ants.updateAnt(ant)
-			-- Move forward
-			if ant.onGraph then
-				-- Movement on Graph
-				ant.prevx = ant.x
-				ant.prevy = ant.y
-					local speed = (ant.eating and 0.0 or ant.speed) * (love.keyboard.isDown("lshift") and 6 or 1)
-				local change = moveGraph.proceed(ant, speed, ant.goingHome)
-				-- fix ants going below ground
-				if ant.toPoint.tp == "ground" and ant.fromPoint.tp == "ground" and simulationDt > 0 then
-					if ant.vx >  0.1 then ant.mirror = true end
-					if ant.vx < -0.1 then ant.mirror = false end
-				else
-					if ant.fromPoint.tp == "leaf" then plant.sadFace() end
-				end
-				-- Apply force to leaves and branches
-				if ant.toPoint.tp == "plant" and ant.toPoint.branchIndex then
-					if ant.toPoint.branchIndex >= 1 and ant.toPoint.branchIndex < #plant.branches[ant.toPoint.stemIndex] then
-        				applyForce(plant.branches[ant.toPoint.stemIndex], ant.toPoint.branchIndex+1,  0.0, 0.01,  1.0, simulationDt)
-					end
-				end
-				if ant.toPoint.tp == "leaf" and ant.toPoint.branchIndex then 
-					if ant.toPoint.branchIndex >= 2 then 
-						applyForce(plant.branches[ant.toPoint.stemIndex], ant.toPoint.branchIndex,  0.0, 0.01,  1.0, simulationDt)
-					end 
-				end 
-				-- TODO leaf noch!
-				-- eating vs movement
-				if not ant.eating then
-					ant.vx = (ant.x - ant.prevx)/simulationDt
-					ant.vy = (ant.y - ant.prevy)/simulationDt
-					-- Compute interpolated new angle
-					local target_angle = 0.5*math.pi - math.atan2(ant.vx, ant.vy)
-					local angle_dif = (target_angle - ant.angle)/(2*math.pi)
-					angle_dif = (angle_dif - math.floor(angle_dif))*(2*math.pi)
-					if angle_dif > math.pi then angle_dif = angle_dif - 2*math.pi end
-					ant.angle = 0.92*ant.angle + 0.08*(ant.angle + angle_dif)
-					-- Moved outside?
-					if ant.toPoint == level.leftEntryPoint or ant.toPoint == level.rightEntryPoint then
-						ants.deleteAnt(ant)
+			-- Alive?
+			if ant.life > 0.0 then
+				-- Move forward
+				if ant.onGraph then
+					-- Movement on Graph
+					ant.prevx = ant.x
+					ant.prevy = ant.y
+						local speed = (ant.eating and 0.0 or ant.speed) * (love.keyboard.isDown("lshift") and 6 or 1)
+					local change = moveGraph.proceed(ant, speed, ant.goingHome)
+					-- fix ants going below ground
+					if ant.toPoint.tp == "ground" and ant.fromPoint.tp == "ground" and simulationDt > 0 then
+						if ant.vx >  0.1 then ant.mirror = true end
+						if ant.vx < -0.1 then ant.mirror = false end
 					else
-						-- Start Eating when walking on a leaf
-						if ant.fromPoint.tp == "leaf" and not ant.goingHome then
-							ant.eating = true
-							ant.eatingTimeRemaining = ants.eatDuration
-							ant.inertia = 0.92
+						if ant.fromPoint.tp == "leaf" then plant.sadFace() end
+					end
+					-- Apply force to leaves and branches
+					if ant.toPoint.tp == "plant" and ant.toPoint.branchIndex then
+						if ant.toPoint.branchIndex >= 1 and ant.toPoint.branchIndex < #plant.branches[ant.toPoint.stemIndex] then
+	        				applyForce(plant.branches[ant.toPoint.stemIndex], ant.toPoint.branchIndex+1,  0.0, 0.01,  1.0, simulationDt)
+						end
+					end
+					if ant.toPoint.tp == "leaf" and ant.toPoint.branchIndex then 
+						if ant.toPoint.branchIndex >= 2 then 
+							applyForce(plant.branches[ant.toPoint.stemIndex], ant.toPoint.branchIndex,  0.0, 0.01,  1.0, simulationDt)
+						end 
+					end 
+					-- Damaged by Thorns?
+					if ant.fromPoint.stemIndex and not ant.fromPoint.branchIndex then
+						-- ant on stem 
+						local index = ((ant.vy < 0) and ant.fromPoint.stemIndex or ant.toPoint.stemIndex)
+						if plant.stem[index] and plant.stem[index].thorns then
+							-- damage ant
+							--if ant.life >= 1.0 then lush.play("enemy_hit.wav") end
+							local killed = ants.damage(ant, simulationDt*0.3)
+							if killed then return end
+						end
+					end
+					-- TODO leaf noch!
+					-- eating vs movement
+					if not ant.eating then
+						ant.vx = (ant.x - ant.prevx)/simulationDt
+						ant.vy = (ant.y - ant.prevy)/simulationDt
+						-- Compute interpolated new angle
+						local target_angle = 0.5*math.pi - math.atan2(ant.vx, ant.vy)
+						local angle_dif = (target_angle - ant.angle)/(2*math.pi)
+						angle_dif = (angle_dif - math.floor(angle_dif))*(2*math.pi)
+						if angle_dif > math.pi then angle_dif = angle_dif - 2*math.pi end
+						ant.angle = 0.92*ant.angle + 0.08*(ant.angle + angle_dif)
+						-- Moved outside?
+						if ant.toPoint == level.leftEntryPoint or ant.toPoint == level.rightEntryPoint then
+							ants.deleteAnt(ant)
+						else
+							-- Start Eating when walking on a leaf
+							if ant.fromPoint.tp == "leaf" and not ant.goingHome then
+								ant.eating = true
+								ant.eatingTimeRemaining = ants.eatDuration
+								ant.inertia = 0.92
+								lush.play("eating.wav")
+							end
+						end
+					else
+						local leaf = plant.branches[ant.fromPoint.stemIndex][ant.fromPoint.branchIndex].leaf
+						if leaf then
+							leaf.health = leaf.health - simulationDt / 13.0 -- 2.5 * 5
+							-- Flower is shocked
+							plant.screamFace()
+							-- Affect leaf
+							local leafGone = leaf.health < 0.0
+						end
+						-- Eating update
+						ant.eatingTimeRemaining = ant.eatingTimeRemaining - simulationDt
+						if ant.eatingTimeRemaining <= ants.eatDuration/2 and ant.eatingTimeRemaining + simulationDt >= ants.eatDuration/2 then 
 							lush.play("eating.wav")
+						end
+
+						if ant.eatingTimeRemaining <= 0.0 or leafGone then
+							ant.eating = false
+							ant.goingHome = true
+							ant.inertia = 0.97
 						end
 					end
 				else
-					local leaf = plant.branches[ant.fromPoint.stemIndex][ant.fromPoint.branchIndex].leaf
-					leaf.health = leaf.health - simulationDt / 13.0 -- 2.5 * 5
-					print(leaf.health)
-					-- Flower is shocked
-					plant.screamFace()
-					-- Affect leaf
-					local leafGone = leaf.health < 0.0
-					-- Eating update
-					ant.eatingTimeRemaining = ant.eatingTimeRemaining - simulationDt
-					if ant.eatingTimeRemaining <= ants.eatDuration/2 and ant.eatingTimeRemaining + simulationDt >= ants.eatDuration/2 then 
-						lush.play("eating.wav")
-					end
-
-					if ant.eatingTimeRemaining <= 0.0 or leafGone then
-						ant.eating = false
-						ant.goingHome = true
-						ant.inertia = 0.97
+					-- Fall Gravity
+					ant.vy = ant.vy + ants.gravity*simulationDt
+					-- Movement
+					ant.x = ant.x + ant.vx*simulationDt
+					ant.y = ant.y + ant.vy*simulationDt
+					-- Check Ground
+					local gh = level.getGroundHeight(ant.x)
+					if ant.y > gh then
+						ant.y = gh
+						ant.onGraph = true
+						ant.fromPoint, ant.toPoint, ant.p = level.getGroundNode(ant.x)
+						ant.vy = 0.0
+						if ant.x > 0 then
+							ant.mirror = true
+						else
+							ant.mirror = false
+						end
 					end
 				end
+				-- Damage Indicator
+				if ant.damageIndicator > 0.0 then
+					ant.damageIndicator = ant.damageIndicator - simulationDt*2.5
+					if ant.damageIndicator < 0.0 then ant.damageIndicator = 0.0 end
+				end
 			else
+				-- Ant is dead
 				-- Fall Gravity
 				ant.vy = ant.vy + ants.gravity*simulationDt
 				-- Movement
 				ant.x = ant.x + ant.vx*simulationDt
 				ant.y = ant.y + ant.vy*simulationDt
-				-- Check Ground
-				local gh = level.getGroundHeight(ant.x)
-				if ant.y > gh then
-					ant.y = gh
-					ant.onGraph = true
-					ant.fromPoint, ant.toPoint, ant.p = level.getGroundNode(ant.x)
-					ant.vy = 0.0
-					if ant.x > 0 then
-						ant.mirror = true
-					else
-						ant.mirror = false
-					end
+				local gh = level.getGroundHeight(ant.x) - 40
+				if ant.y >= gh then
+					ant.vy = 0.1
+					ant.vx = 0.8*ant.vx
+					ant.alpha = ant.alpha - simulationDt*0.2
+					if ant.alpha <= 0.0 then ants.deleteAnt(ant) end
 				end
 			end
 		end
+
+
+	function ants.damage(ant, dmg)
+		ant.life = ant.life - dmg
+		if ant.damageIndicator <= 0.0 then ant.damageIndicator = 1.0; lush.play("enemy_hit.wav") end
+		if ant.life <= 0 then
+			-- this kills the ant
+			ants.kill(ant)
+			return 1
+		end
+		return false
+	end
+
+	function ants.kill(ant)
+		ant.life = 0.0
+		ant.onGraph = false
+		ant.damageIndicator = 0.0
+	end
 
 	function ants.draw()
 		for i = 1,#ants.list do
 			ants.drawAnt(ants.list[i])
 		end
+		love.graphics.setColor(255,255,255,255)
 	end
 
 		function ants.drawAnt(ant)
 			local scx = ant.mirror and -0.3 or 0.3
+			local c = 255-200*ant.damageIndicator
+			love.graphics.setColor(255, c, c, c*ant.alpha)
 			love.graphics.draw(ants.image, ant.x, ant.y, ant.angle + (ant.mirror and 0 or math.pi), scx, 0.3, ants.image:getWidth()/2, ants.image:getHeight())
 		end
 

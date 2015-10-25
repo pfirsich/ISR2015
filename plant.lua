@@ -602,6 +602,7 @@ function plant.appendToGraph()
     local prev = level.plantAttachmentNode
     for i = 2, #plant.stem do
         prev = moveGraph.append(0,0, prev, 100, "plant")
+        prev.stemIndex = i
         -- Branches
         plant.stem[i].graphNode = prev
         local bprev = prev
@@ -624,6 +625,7 @@ function plant.updateGraph()
         if not plant.stem[i].graphNode then 
             -- Create new Stem node
             plant.stem[i].graphNode = moveGraph.append(x,y, plant.stem[i-1].graphNode, 100, "plant") 
+            plant.stem[i].graphNode.stemIndex = i
         end
         -- Update stem position
         plant.stem[i].graphNode.x = x
@@ -636,7 +638,7 @@ function plant.updateGraph()
             if not branch.graphNode then 
                 -- create new branch node
                 local parent = ((j == 1) and plant.stem[i].graphNode or plant.branches[i][j-1].graphNode)
-                branch.graphNode = moveGraph.append(x, y,  parent, 200, "plant") 
+                branch.graphNode = moveGraph.append(x, y,  parent, 20, "plant") 
                 branch.graphNode.stemIndex = i
                 branch.graphNode.branchIndex = j
             end
@@ -649,7 +651,7 @@ function plant.updateGraph()
                 y = y + 90*math.sin(angle)
                 if not branch.leaf.graphNode then
                     -- create new leaf node 
-                    branch.leaf.graphNode = moveGraph.append(x,y, branch.graphNode, 400, "leaf")
+                    branch.leaf.graphNode = moveGraph.append(x,y, branch.graphNode, 40, "leaf")
                     branch.leaf.graphNode.stemIndex = i
                     branch.leaf.graphNode.branchIndex = j 
                 end
@@ -662,7 +664,7 @@ function plant.updateGraph()
     -- Check for deleted plants
     local deleteList = {}
     for i = #moveGraph.nodes, level.rightEntryPoint.id+1, -1 do
-        if moveGraph.nodes[i].stemIndex then
+        if moveGraph.nodes[i].branchIndexIndex then
             if not plant.branches[moveGraph.nodes[i].stemIndex][moveGraph.nodes[i].branchIndex] then 
                 moveGraph.remove(i)
             end
