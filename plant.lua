@@ -17,7 +17,7 @@ plant.blink = 0.0
 plant.nextBlink = 0
 plant.targetBlink = 0.0
 
-plant.thornImages = {love.graphics.newImage("images/thorn.png")}
+plant.thornImages = {love.graphics.newImage("images/thorn1.png"), love.graphics.newImage("images/thorn2.png"), love.graphics.newImage("images/thorn3.png")}
 
 local leafShader = love.graphics.newShader([[
 uniform Image noiseMap;
@@ -456,7 +456,7 @@ function plant.draw()
         if plant.stem[i].thorns then 
             for t = 1, #plant.stem[i].thorns do 
                 local thorn = plant.stem[i].thorns[t]
-                local thornSize = lerp(0.18, 0.22, thorn.variance)
+                local thornSize = lerp(0.25, 0.3, thorn.variance)
                 local c = lerp(200, 255, thorn.variance)
                 love.graphics.setColor(c, c, c, 255)
                 local x, y = lerp(plant.stem[i]._x, plant.stem[i]._nextX, thorn.position), lerp(plant.stem[i]._y, plant.stem[i]._nextY, thorn.position)

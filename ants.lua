@@ -274,6 +274,7 @@ do
 			if ants.list[i].onGraph and ants.list[i].fromPoint.id > level.rightEntryPoint.id then
 				-- shake it off
 				ants.list[i].onGraph = false
+				ants.list[i].eating = false
 			end
 		end
 	end
