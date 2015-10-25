@@ -28,6 +28,8 @@ do
 			text="Grow a poisonous leaf that will hurt any foes eating from it. Will generate fewer glucose"}
 		textWidgets.list["upgradeSpiderLeaf"] = {caption = "Call for Spider", cost = {2,2,6},
 			text="Grows a leaf that attracks spiders due to its amazing web supporting capabilities. Will generate fewer glucose."}
+		textWidgets.list["dropLeaf"] = {caption = "Drop leaf", cost = {0, 0, 0}, 
+			text="Drops the leaf."}
 		textWidgets.list["dance"] = {caption = "Shake it off", cost = {2,2,4},
 			text="Shake yourself in order to get rid of any unwanted guests."}
 		textWidgets.list["strikeRoots"] = {caption = "Enhance Roots", cost = {4,6,0},

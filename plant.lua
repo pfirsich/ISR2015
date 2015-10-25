@@ -7,7 +7,6 @@ plant.stalkMesh = love.graphics.newMesh(50, plant.stemTexture, "triangles")
 plant.headImages = {love.graphics.newImage("images/FlowerBud.png"), love.graphics.newImage("images/FlowerOne.png"), love.graphics.newImage("images/FlowerTwo.png")}
 plant.headImageIndex = 1
 plant.shakeAmp = 0
-plant.growthProgress = 0
 
 plant.mouthOpen = 0.0
 plant.targetMouthOpen = 0.0
@@ -40,7 +39,7 @@ end
 function smallPlant()
     local totalAngle = 0
     local angleRange = 0.05 * 2 * math.pi
-    for i = 1, 3 do 
+    for i = 1, 2 do 
         local angle = randf(-angleRange - totalAngle, angleRange - totalAngle)
         table.insert(plant.stem, {angle = angle, angleOrigin = angle, length = randf(100, 120), branchPosition = 0.0, velocity = 0})
         totalAngle = totalAngle + angle
@@ -150,6 +149,8 @@ end
 function plant.update(dt)
     -- animations
     for i = 1, #plant.stem do 
+        bounceInto(plant.stem[i], "targetLength", "length")
+
         for j = 1, #plant.branches[i] do 
             bounceInto(plant.branches[i][j], "targetLength", "length")
 
@@ -422,7 +423,7 @@ function plant.draw()
             end}
         })
     else 
-        for i = 2, #plant.stem - 1 do 
+        for i = 2, #plant.stem do 
             if #plant.branches[i] == 0 then
                 local sx, sy = camera.worldToScreen(plant.stem[i]._x, plant.stem[i]._y) 
                 knobs.draw(100*i, sx, sy, {
@@ -434,6 +435,7 @@ function plant.draw()
                         branchSeg.creationTime = currentState.time
                         branchSeg.velocity = 0
                         plant.branches[i] = {branchSeg}
+                        plant.branches[i].count = 1
                         plant.happyFace()
                         plant.update(simulationDt)
                         lush.play("ability.wav")
@@ -459,8 +461,13 @@ function plant.draw()
                                 lush.play("ability.wav")
                             end}
                         })
-                    else -- level up leaves
-
+                    else -- level up + drop leaves
+                        local sx, sy = camera.worldToScreen(plant.branches[i][j]._nextX, plant.branches[i][j]._nextY) 
+                        knobs.draw(100*i + j, sx, sy, {
+                            {textWidget = textWidgets.list["dropLeaf"], clickCallback = function()
+                                plant.branches[i][j].leaf.wither = true
+                            end}
+                        })
                     end 
                 end 
             end 
@@ -498,13 +505,13 @@ end
 function plant.updateGraph()
     -- Stem
     for i = 2, #plant.stem do
-        if not plant.stem[i].graphNode then plan.stem[i].graphNode = moveGraph.append(0,0, plant.stem[i-1].graphNode, 100, "plant") end
+        if not plant.stem[i].graphNode then plant.stem[i].graphNode = moveGraph.append(0,0, plant.stem[i-1].graphNode, 100, "plant") end
         plant.stem[i].graphNode.x = level.plantAttachmentPosition[1] + plant.stem[i]._x + 25
         plant.stem[i].graphNode.y = level.plantAttachmentPosition[2] + plant.stem[i]._y - 210
         -- Branches
         for j = 1, #plant.branches[i] do
             local branch = plant.branches[i][j]
-            if not branch.graphNode then branch.graphNode = moveGraph.append(0,0, (j == 1 and plant.stem[i].graphNode or plant.branches[i][j-1]), 200, "plant") end
+            if not branch.graphNode then branch.graphNode = moveGraph.append(0,0, (j == 1 and plant.stem[i].graphNode or plant.branches[i][j-1].graphNode), 200, "plant") end
             branch.graphNode.x = level.plantAttachmentPosition[1] + branch._nextX + 25
             branch.graphNode.y = level.plantAttachmentPosition[2] + branch._nextY - 200
             if branch.leaf then
