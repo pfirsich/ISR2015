@@ -77,20 +77,34 @@ do
 		function ants.updateAnt(ant)
 			-- Move forward
 			if ant.onGraph then
+				-- Movement on Graph
 				ant.prevx = ant.x
 				ant.prevy = ant.y
-				-- Movement on Graph
-				local change = moveGraph.proceed(ant, ant.eating and ant.speed*0.01 or ant.speed, ant.goingHome)
+					local speed = (ant.eating and 0.0 or ant.speed) * (love.keyboard.isDown("lshift") and 20 or 1)
+				local change = moveGraph.proceed(ant, speed, ant.goingHome)
+				if ant.eating then
+					print("Ant Eating!!!")
+				else
+					print("    Ant walking, " .. math.floor(ant.x) .. ", " .. math.floor(ant.y) .. 
+						", " .. math.floor(ant.vx) .. ", " .. math.floor(ant.vy))
+				end
 				-- fix ants going below ground
 				if ant.toPoint.tp == "ground" and ant.fromPoint.tp == "ground" and simulationDt > 0 then
 					if ant.vx >  0.1 then ant.mirror = true end
 					if ant.vx < -0.1 then ant.mirror = false end
+				else
+					if ant.fromPoint.tp == "leaf" then plant.sadFace() end
 				end
 				-- eating vs movement
 				if not ant.eating then
 					ant.vx = (ant.x - ant.prevx)/simulationDt
 					ant.vy = (ant.y - ant.prevy)/simulationDt
-					ant.angle = 0.5*math.pi - math.atan2(ant.vx, ant.vy)
+					-- Compute interpolated new angle
+					local target_angle = 0.5*math.pi - math.atan2(ant.vx, ant.vy)
+					local angle_dif = (target_angle - ant.angle)/(2*math.pi)
+					angle_dif = (angle_dif - math.floor(angle_dif))*(2*math.pi)
+					if angle_dif > math.pi then angle_dif = angle_dif - 2*math.pi end
+					ant.angle = 0.92*ant.angle + 0.08*(ant.angle + angle_dif)
 					-- Moved outside?
 					if ant.toPoint == level.leftEntryPoint or ant.toPoint == level.rightEntryPoint then
 						ants.deleteAnt(ant)
@@ -99,10 +113,12 @@ do
 						if ant.fromPoint.tp == "leaf" and not ant.goingHome then
 							ant.eating = true
 							ant.eatingTimeRemaining = ants.eatDuration
-							ant.inertia = 0.7
+							ant.inertia = 0.92
 						end
 					end
 				else
+					-- Flower is shocked
+					plant.screamFace()
 					-- Affect leaf
 					local leafGone = false -- or leaf already gone, stored in some value?
 					-- ...
