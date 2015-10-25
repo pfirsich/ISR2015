@@ -8,6 +8,7 @@ function gameState.load()
     ants.testInit()
     --plant.strikeRoots()
     hudValueFont = love.graphics.newFont(30)
+    background.load()
 end
 
 function gameState.onEnter()
@@ -57,6 +58,7 @@ function gameState.draw()
     love.graphics.rectangle("fill", 0, 0, love.window.getWidth(), love.window.getHeight())
     love.graphics.setColor(255, 255, 255, 255)
 
+    background.draw()
     camera.push()
     plant.draw()
 
