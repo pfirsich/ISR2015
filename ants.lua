@@ -120,6 +120,7 @@ do
 							ant.eating = true
 							ant.eatingTimeRemaining = ants.eatDuration
 							ant.inertia = 0.92
+							lush.play("eating.wav")
 						end
 					end
 				else
@@ -132,6 +133,10 @@ do
 					local leafGone = leaf.health < 0.0
 					-- Eating update
 					ant.eatingTimeRemaining = ant.eatingTimeRemaining - simulationDt
+					if ant.eatingTimeRemaining <= ants.eatDuration/2 and ant.eatingTimeRemaining + simulationDt >= ants.eatDuration/2 then 
+						lush.play("eating.wav")
+					end
+
 					if ant.eatingTimeRemaining <= 0.0 or leafGone then
 						ant.eating = false
 						ant.goingHome = true

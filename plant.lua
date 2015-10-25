@@ -7,6 +7,7 @@ plant.stalkMesh = love.graphics.newMesh(50, plant.stemTexture, "triangles")
 plant.headImages = {love.graphics.newImage("images/FlowerBud.png"), love.graphics.newImage("images/FlowerOne.png"), love.graphics.newImage("images/FlowerTwo.png")}
 plant.headImageIndex = 1
 plant.shakeAmp = 0
+plant.targetShake = 0
 
 plant.mouthOpen = 0.0
 plant.targetMouthOpen = 0.0
@@ -15,6 +16,8 @@ plant.targetMouthScale = 1.0
 plant.blink = 0.0
 plant.nextBlink = 0
 plant.targetBlink = 0.0
+
+plant.thornImages = {love.graphics.newImage("images/thorn.png")}
 
 local leafShader = love.graphics.newShader([[
 uniform Image noiseMap;
@@ -28,6 +31,60 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoords, vec2 screenCoords) {
 ]])
 local leafDamageMap = love.graphics.newImage("images/leafdamage.png")
 leafDamageMap:setWrap("repeat", "repeat")
+
+plant.rootCanvas = love.graphics.newCanvas(1024, 1024)
+plant.rootCanvas:clear(0, 0, 0, 0)
+plant.rootLevel = 0
+
+function drawRoots(canvas, size, color, colorOutline)
+    love.graphics.setCanvas(canvas)
+
+    local posX, posY, dirX, dirY
+    local alpha, alphaStep = -1, 0
+
+    local it = 1
+    while true do
+        alpha = alpha - alphaStep
+        if alpha <= 0.0 then 
+            posX, posY = 15.0 * (love.math.random() * 2.0 - 1.0) + canvas:getWidth() / 2, love.math.random() * 10
+            dirX, dirY = 0, 1
+            alpha = 1.0
+            alphaStep = randf(0.5, 1.5) * 0.01 / size
+            if it >= 1000 * size then break end
+        end 
+
+        posX = posX + dirX * 2.0
+        posY = posY + dirY * 2.0
+        
+        local range = 0.1 * math.pi * 2.0
+        local dangle = -range/2 + range * love.math.random()
+        
+        if love.math.random() - 0.1 < math.abs(dirX) or dirY <= 0 then 
+            if dirY <= 0 then 
+                dangle = dirX > 0 and -math.abs(dangle) or math.abs(dangle)
+            end
+            local ndirX = math.cos(dangle)*dirX + math.sin(dangle)*dirY
+            local ndirY =-math.sin(dangle)*dirX + math.cos(dangle)*dirY
+            dirX, dirY = ndirX, ndirY
+        end
+        
+        local fade = math.min(1.0, posY / canvas:getHeight() * 10.0)
+        love.graphics.setLineWidth(0.5)
+        love.graphics.setColor(colorOutline[1], colorOutline[2], colorOutline[3], fade * alpha * 255)
+        love.graphics.circle("line", posX, posY, 5 * alpha)
+        love.graphics.setColor(color[1], color[2], color[3], fade * alpha * 255)
+        love.graphics.circle("fill", posX, posY, 5 * alpha)
+        
+        it = it + 1
+    end 
+
+    love.graphics.setCanvas()
+end 
+
+function plant.strikeRoots()
+    plant.rootLevel = plant.rootLevel + 1
+    drawRoots(plant.rootCanvas, plant.rootLevel, {140, 150, 5}, {60, 80, 0})
+end
 
 function plant.happyFace()
     plant.targetMouthOpen = 1.0
@@ -179,23 +236,12 @@ function plant.update(dt)
     plant.danceAmplitude = math.cos(danceAmpAngle) * (0 + plant.shakeAmp)
 
     local maxShakeAmp = 12.0
-    if love.keyboard.isDown(" ") then 
-        if plant.shakeAmp < 0.01 then 
-            lush.play("leaves.wav")
-            plant.screamFace()
-        end 
-
+    if plant.shakeAmp < plant.targetShake * maxShakeAmp then 
         plant.shakeAmp = plant.shakeAmp + dt*maxShakeAmp*5.0
-        if plant.shakeAmp > maxShakeAmp then plant.shakeAmp = maxShakeAmp end
     else 
-        if plant.shakeAmp > 0.0 then 
-            plant.shakeAmp = plant.shakeAmp - dt*maxShakeAmp
-            if plant.shakeAmp < 0.0 then 
-                plant.shakeAmp = 0.0 
-                plant.defaultFace()
-            end
-        end
-    end 
+        plant.shakeAmp = plant.shakeAmp - dt*maxShakeAmp
+    end
+    plant.shakeAmp = clamp(plant.shakeAmp, 0, maxShakeAmp)
 
     for i = 1, #plant.stem do 
         local danceAngle = (i-1) / (#plant.stem-1) * 2 * math.pi
@@ -406,6 +452,17 @@ function plant.draw()
         --love.graphics.circle("fill", plant.stem[i]._x, plant.stem[i]._y, 8, 12)
     end 
 
+    love.graphics.setColor(255, 255, 255, 255)
+    for i = 1, #plant.stem do 
+        if plant.stem[i].thorns then 
+            for t = 1, #plant.stem[i].thorns do 
+                local thorn = plant.stem[i].thorns[t]
+                local thornSize = 0.2
+                love.graphics.draw(thorn.image, stemPoints[thorn.index], stemPoints[thorn.index+1], thorn.angle, thornSize, thornSize, 0, thorn.image:getHeight()/2)
+            end 
+        end 
+    end 
+
     local headAngle = plant.danceAmplitude * 0.01
     love.graphics.setColor(255, 255, 255, 255)
     local flowerHeadScale = lerp(0.3, 0.5, (#plant.stem - 3) / 7)
@@ -450,8 +507,8 @@ function plant.draw()
             end}
         })
     else 
-        for i = 2, #plant.stem do 
-            if #plant.branches[i] == 0 then
+        for i = 1, #plant.stem do 
+            if #plant.branches[i] == 0 and i >= 2 then
                 local sx, sy = camera.worldToScreen(plant.stem[i]._x, plant.stem[i]._y) 
                 knobs.draw(100*i, sx, sy, {
                     {textWidget = textWidgets.list["createBranch"], clickCallback = function()
@@ -500,6 +557,30 @@ function plant.draw()
                     end 
                 end 
             end 
+
+            if not plant.stem[i].thorns then 
+                local startIndex = math.floor(#stemPoints / #plant.stem * (i-1))
+                local endIndex = math.floor(#stemPoints / #plant.stem * (i-1+1))
+
+                local center1 = math.floor((startIndex + endIndex) / 2 - 1)
+                local center2 = math.floor((startIndex + endIndex) / 2 + 1)
+
+                local x, y = (stemPoints[center1] + stemPoints[center2])/2, (stemPoints[center1+1] + stemPoints[center2+1])/2
+                local sx, sy = camera.worldToScreen(x, y) 
+                
+                knobs.draw(40*i, sx, sy, {
+                    {textWidget = textWidgets.list["growThorns"], clickCallback = function()
+                        plant.stem[i].thorns = {}
+                        for t = 1, 5 do 
+                            local thorn = {index = love.math.random(startIndex, endIndex)}
+                            thorn.index = thorn.index + thorn.index % 2 - 1 -- make it odd
+                            thorn.image = plant.thornImages[love.math.random(1, #plant.thornImages)]
+                            thorn.angle = love.math.random() * 2 * math.pi
+                            plant.stem[i].thorns[t] = thorn
+                        end 
+                    end}
+                })
+            end
         end
     end
     love.graphics.pop()
@@ -576,14 +657,14 @@ function plant.updateGraph()
     end
     -- Check for deleted plants
     local deleteList = {}
-    for i = level.rightEntryPoint.id+1, #moveGraph.nodes do
+    for i = #moveGraph.nodes, level.rightEntryPoint.id+1, -1 do
         if moveGraph.nodes[i].stemIndex then
             if not plant.branches[moveGraph.nodes[i].stemIndex][moveGraph.nodes[i].branchIndex] then 
-                table.insert(deleteList, i)
+                moveGraph.remove(i)
             end
+            if moveGraph.nodes[i].tp == "leaf" and plant.branches[moveGraph.nodes[i].stemIndex][moveGraph.nodes[i].branchIndex].leaf == nil then 
+                moveGraph.remove(i)
+            end 
         end
-    end
-    for i = #deleteList,1,-1 do
-        moveGraph.remove(deleteList[i])
     end
 end

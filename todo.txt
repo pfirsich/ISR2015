@@ -22,7 +22,6 @@ zweites Blatt
 
 Joel:
 Ressourcen
-Abfaul-Shader / Fress-Shader
 Intro
     Einfaden mit Musik und so
 Wurzeln
@@ -32,6 +31,6 @@ Normal-Mapping, God-Rays
 Blätter streicheln
 
 Markus:
-Ameisen
+
 
 Partikel: Schuh, Mampfen, Levelup, neue Dinger

@@ -32,9 +32,9 @@ do
 			text="Drops the leaf."}
 		textWidgets.list["dance"] = {caption = "Shake it off", cost = {2,2,4},
 			text="Shake yourself in order to get rid of any unwanted guests."}
-		textWidgets.list["strikeRoots"] = {caption = "Enhance Roots", cost = {4,6,0},
+		textWidgets.list["strikeRoots"] = {caption = "Strike Roots", cost = {4,6,0},
 			text="Strike further roots to gain more water at the cost of glucose collection."}
-		textWidgets.list["spawnThorns"] = {caption = "Grow Thorns", cost = {8,8,2},
+		textWidgets.list["growThorns"] = {caption = "Grow Thorns", cost = {8,8,2},
 			text="Grows thornes that damage insects on contact"}
 		textWidgets.list["openBud"] = {caption = "Rebuild Yourself", cost = {0, 0, 0}, text = "Open your bud and start anew."}
 		-- Complete list

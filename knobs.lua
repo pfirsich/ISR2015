@@ -27,7 +27,7 @@ do
 		knobs.prepareElements(content)
 		-- check mouse interaction
 		local self = knobs.list[id]
-		if knobs.mouseInSphere(x, y, knobs.list[id].hovered and 45 or 15) then
+		if knobs.mouseInSphere(x, y, knobs.list[id].hovered and 30 or 15) then
 			if not self.hovered then lush.play("hover.wav") end
 			self.hovered = true
 		else
@@ -41,7 +41,7 @@ do
 		end
 		-- Draw basic circle
 		local p = 0.5 - 0.5*math.cos(math.pi*(0.5 - 0.5*math.cos(math.pi*self.zoomedIn)))
-		local size = 15 + 30*p
+		local size = 15 + 15*p
 		love.graphics.circle("line", x, y, size)
 		-- Circles inside
 		if p > 0 then
