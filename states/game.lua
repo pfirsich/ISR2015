@@ -143,11 +143,5 @@ function gameState.draw()
 end
 
 function gameState.keypressed(key)
-    if key == "u" then plant.screamFace() end 
-    if key == "i" then plant.sadFace() end 
-    if key == "o" then plant.defaultFace() end 
-    if key == "p" then plant.happyFace() end 
-    if key == "up" then plant.headImageIndex = clamp(plant.headImageIndex + 1, 1,3); lush.play("levelup.wav", {tags = {}}) end
-    if key == "down" then plant.headImageIndex = clamp(plant.headImageIndex - 1, 1,3) end
-    if key == "n" then plant.strikeRoots() end
+    if key == "," then resources.h2o = resources.h2o + 100; resources.glucose = resources.glucose + 100; resources.minerals = resources.minerals + 100; end
 end 
