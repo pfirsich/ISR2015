@@ -25,7 +25,7 @@ do
 			y = y+0,
 			neighbours = (parent and {{parent, dis}} or {}),
 			priority = priority or 1,
-			inversePriority = priority and 1.0/priority or 1,
+			inversePriority = (priority > 0) and 1.0/priority or 1,
 		}
 		print("Adding node at " .. x .. "," .. y .. " with id " .. node.id .. " for parent " .. (parent and parent.id or "nil"))
 		print("Now has " .. #node.neighbours .. " neighbours")
@@ -35,6 +35,22 @@ do
 		end
 		table.insert(moveGraph.nodes, node)
 		return node
+	end
+
+	function moveGraph.remove(index)
+		-- remove from neighbours
+		local object = moveGraph.nodes[index]
+		for i = 1,#object.neighbours do
+			local nb = object.neighbours[i][1]
+			for j = 1,#nb.neighbours do
+				if nb.neighbours[j][1] == object then
+					table.remove(nb.neighbours, j)
+					break
+				end
+			end
+		end
+		-- remove from table
+		table.remove(moveGraph.nodes, index)
 	end
 
 	function moveGraph.clear()
@@ -56,7 +72,7 @@ do
 			-- Target Points found
 			if targets[2] then
 				-- Multiple target points, select random one according to each point's priority
-				local r = love.math.random(costSum)-0.001
+				local r = love.math.random()*costSum-0.001
 				local newPoint = targets[#targets]
 				for i = 1,#targets-1 do
 					local pri = (leavingPlant and targets[i].inversePriority or targets[i].priority)

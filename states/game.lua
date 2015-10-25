@@ -46,6 +46,6 @@ function gameState.keypressed(key)
     if key == "i" then plant.sadFace() end 
     if key == "o" then plant.defaultFace() end 
     if key == "p" then plant.happyFace() end 
-    if key == "up" then plant.headImageIndex = plant.headImageIndex + 1; lush.play("levelup.wav", {tags = {}}) end
-    if key == "down" then plant.headImageIndex = plant.headImageIndex - 1 end
+    if key == "up" then plant.headImageIndex = clamp(plant.headImageIndex + 1, 1,3); lush.play("levelup.wav", {tags = {}}) end
+    if key == "down" then plant.headImageIndex = clamp(plant.headImageIndex - 1, 1,3) end
 end 
