@@ -10,7 +10,7 @@ function director(dt)
         end 
     end 
 
-    if full then 
+    if full and #plant.stem < 10 then 
     	local angleRange = 0.05 * 2 * math.pi
     	local totalAngle = plant.stem[#plant.stem]._totalAngle - 0.75 * 2 * math.pi
         local angle = randf(-angleRange - totalAngle, angleRange - totalAngle)
@@ -29,6 +29,12 @@ function director(dt)
            									creationTime = currentState.time, velocity = 0}
     			end 
     		end 
+    	end 
+
+    	if #plant.stem == 10 then 
+    		plant.headImageIndex = plant.headImageIndex + 1
+    		plant.happyFace()
+            lush.play("levelup.wav")
     	end 
 
     	plant.update(dt)
