@@ -83,7 +83,7 @@ end
 
 function plant.strikeRoots()
     plant.rootLevel = plant.rootLevel + 1
-    drawRoots(plant.rootCanvas, plant.rootLevel, {140, 150, 5}, {60, 80, 0})
+    drawRoots(plant.rootCanvas, plant.rootLevel, {60, 120, 5}, {20, 60, 0})
 end
 
 function plant.happyFace()
@@ -452,13 +452,15 @@ function plant.draw()
         --love.graphics.circle("fill", plant.stem[i]._x, plant.stem[i]._y, 8, 12)
     end 
 
-    love.graphics.setColor(255, 255, 255, 255)
     for i = 1, #plant.stem do 
         if plant.stem[i].thorns then 
             for t = 1, #plant.stem[i].thorns do 
                 local thorn = plant.stem[i].thorns[t]
-                local thornSize = 0.2
-                love.graphics.draw(thorn.image, stemPoints[thorn.index], stemPoints[thorn.index+1], thorn.angle, thornSize, thornSize, 0, thorn.image:getHeight()/2)
+                local thornSize = lerp(0.18, 0.22, thorn.variance)
+                local c = lerp(200, 255, thorn.variance)
+                love.graphics.setColor(c, c, c, 255)
+                local x, y = lerp(plant.stem[i]._x, plant.stem[i]._nextX, thorn.position), lerp(plant.stem[i]._y, plant.stem[i]._nextY, thorn.position)
+                love.graphics.draw(thorn.image, x, y, thorn.angle + plant.stem[i]._totalAngle, thornSize * thorn.flip, thornSize, 0, thorn.image:getHeight()/2)
             end 
         end 
     end 
@@ -558,7 +560,7 @@ function plant.draw()
                 end 
             end 
 
-            if not plant.stem[i].thorns then 
+            if not plant.stem[i].thorns and i < #plant.stem and #plant.stem > 5 then 
                 local startIndex = math.floor(#stemPoints / #plant.stem * (i-1))
                 local endIndex = math.floor(#stemPoints / #plant.stem * (i-1+1))
 
@@ -573,9 +575,11 @@ function plant.draw()
                         plant.stem[i].thorns = {}
                         for t = 1, 5 do 
                             local thorn = {index = love.math.random(startIndex, endIndex)}
-                            thorn.index = thorn.index + thorn.index % 2 - 1 -- make it odd
+                            thorn.position = t / 6
                             thorn.image = plant.thornImages[love.math.random(1, #plant.thornImages)]
-                            thorn.angle = love.math.random() * 2 * math.pi
+                            thorn.angle = 2*math.pi*randf(-0.05, 0.05) + math.pi/2
+                            thorn.flip = (t % 2 == 0) and 1 or -1
+                            thorn.variance = love.math.random()
                             plant.stem[i].thorns[t] = thorn
                         end 
                     end}
