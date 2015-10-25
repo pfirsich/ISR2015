@@ -63,7 +63,7 @@ resources = {
 }
 
 function drawGame()
-    knobs.update(simulationDt) -- sorry but this solves the problem
+    knobs.update(drawDt) -- sorry but this solves the problem
 	-- Game World
     love.graphics.setColor(100,136,240)
     love.graphics.rectangle("fill", 0, 0, love.window.getWidth(), love.window.getHeight())

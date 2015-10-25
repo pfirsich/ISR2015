@@ -50,7 +50,6 @@ function love.update(dt)
     updateDelayedCalls()
     updateWatchedInputs()
 
-
     currentState.time = (currentState.time or 0) + simulationDt
     if currentState.update then currentState.update() end
 end
@@ -62,6 +61,10 @@ end
 function love.draw()
     drawDt = love.timer.getDelta()
     if currentState.draw then currentState.draw() end
+
+    if love.keyboard.isDown("q") then
+        for i = 1,100 do print("Hello World") end
+    end
 end
 
 function love.keypressed(key, isrepeat)
@@ -85,7 +88,7 @@ function love.run()
     end
 
     simulationTime = love.timer.getTime()
-    simulationDt = 1.0/120.0
+    simulationDt = 1.0/40.0
 
     if love.load then love.load(arg) end
 
