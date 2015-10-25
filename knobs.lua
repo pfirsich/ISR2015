@@ -105,8 +105,22 @@ do
 						end
 					end
 					if knobs.mouse.leftclick == 2 and content[i].clickCallback then 
-						content[i].clickCallback()
-						knobs.used[key] = true
+						local valid = true
+						for j, k in ipairs({"h2o", "glucose", "minerals"}) do 
+							if resources[k] - content[i].textWidget.cost[j] < 0 then 
+								valid = false 
+								break 
+							end 
+						end 
+						if valid then 
+							for j, k in ipairs({"h2o", "glucose", "minerals"}) do 
+								resources[k] = resources[k] - content[i].textWidget.cost[j]
+							end 
+							knobs.used[key] = true
+							content[i].clickCallback()
+						else 
+							lush.play("no.wav")
+						end
 					 end
 					if knobs.mouse.leftclick == 2 then knobs.mouse.leftclick = 1 end -- hax
 				else
