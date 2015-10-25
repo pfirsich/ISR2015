@@ -520,6 +520,7 @@ function plant.draw()
                         branchSeg.targetLength = randf(100, 120)
                         branchSeg.creationTime = currentState.time
                         branchSeg.velocity = 0
+                        increaseCost("createBranch")
                         plant.branches[i] = {branchSeg}
                         plant.branches[i].count = 1
                         plant.happyFace()
@@ -543,6 +544,7 @@ function plant.draw()
                                 leaf.creationTime = currentState.time
                                 leaf.health = 1.0
                                 leaf.damageOffset = {love.math.random(), love.math.random()}
+                                increaseCost("createLeaf")
                                 plant.branches[i][j].leaf = leaf
                                 plant.happyFace()
                                 plant.update(simulationDt)
@@ -580,6 +582,7 @@ function plant.draw()
                             thorn.angle = 2*math.pi*randf(-0.05, 0.05) + math.pi/2
                             thorn.flip = (t % 2 == 0) and 1 or -1
                             thorn.variance = love.math.random()
+                            increaseCost("growThorns")
                             plant.stem[i].thorns[t] = thorn
                         end 
                     end}

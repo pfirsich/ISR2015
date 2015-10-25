@@ -21,23 +21,24 @@ do
 		textWidgets.width = textWidgets.imageScale * textWidgets.image:getWidth()
 		textWidgets.height = textWidgets.imageScale * textWidgets.image:getHeight()
 		-- Branch [color:255,0,0,textWidgets.alpha]This is red text.[n][color:255,255,255,textWidgets.alpha]In a new line, I include an inside the text
-		textWidgets.list["createBranch"] = {caption = "Create Branch", cost = {50,50,0},
+		textWidgets.list["createBranch"] = {caption = "Create Branch", cost = {50,50,0, 15,15,0},
 			text="Add a new branch to your plant which will grow eventually and provide more leaf growth spots."}
-		textWidgets.list["createLeaf"] = {caption = "Create Leaf", cost = {30,30,0},
+		textWidgets.list["createLeaf"] = {caption = "Create Leaf", cost = {30,30,0, 10,10,0},
 			text="Add a leaf to your plant which will generate valuable glucose"}
-		textWidgets.list["upgradePoisonLeaf"] = {caption = "Create Poisoned Leaf", cost = {30,60,20},
+		textWidgets.list["upgradePoisonLeaf"] = {caption = "Create Poisoned Leaf", cost = {30,60,20, 10,20,10},
 			text="Grow a poisonous leaf that will hurt any foes eating from it. Will generate fewer glucose"}
-		textWidgets.list["upgradeSpiderLeaf"] = {caption = "Call for Spider", cost = {20,20,60},
+		textWidgets.list["upgradeSpiderLeaf"] = {caption = "Call for Spider", cost = {20,20,60, 5,5,10},
 			text="Grows a leaf that attracks spiders due to its amazing web supporting capabilities. Will generate fewer glucose."}
-		textWidgets.list["dropLeaf"] = {caption = "Drop leaf", cost = {0, 0, 0}, 
+		textWidgets.list["dropLeaf"] = {caption = "Drop leaf", cost = {0, 0, 0,   0,0,0}, 
 			text="Drops the leaf."}
-		textWidgets.list["dance"] = {caption = "Shake it off", cost = {20,20,40},
+		textWidgets.list["dance"] = {caption = "Shake it off", cost = {20,20,40, 5,5,10},
 			text="Shake yourself in order to get rid of any unwanted guests."}
-		textWidgets.list["strikeRoots"] = {caption = "Strike Roots", cost = {40,60,0},
+		textWidgets.list["strikeRoots"] = {caption = "Strike Roots", cost = {40,60,0, -2,-2,0},
 			text="Strike further roots to gain more water at the cost of glucose collection."}
-		textWidgets.list["growThorns"] = {caption = "Grow Thorns", cost = {80,80,40},
+		textWidgets.list["growThorns"] = {caption = "Grow Thorns", cost = {80,80,40, 20,20,10},
 			text="Grows thornes that damage insects on contact"}
-		textWidgets.list["openBud"] = {caption = "Rebuild Yourself", cost = {0, 0, 0}, text = "Open your bud and start anew."}
+		textWidgets.list["openBud"] = {caption = "Rebuild Yourself", cost = {0, 0, 0,  0,0,0}, 
+			text = "Open your bud and start anew."}
 		-- Complete list
 		for k, v in pairs(textWidgets.list) do
 			v.x = 0
@@ -46,6 +47,19 @@ do
 		end
 	end
 
+	function increaseCost(key)
+		local res = textWidgets.list[key]
+		for i = 1,3 do
+			local add = res.cost[i+3]
+			if add < 0 then
+				-- negative num to multiply
+				res.cost[i] = res.cost[i] * (-add)
+			else
+				-- positive num to add
+				res.cost[i] = res.cost[i] + add
+			end
+		end
+	end
 
 	function textWidgets.show(widget, x, y)
 		widget.x = x

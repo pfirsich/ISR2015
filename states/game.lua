@@ -35,19 +35,19 @@ function gameState.update()
 
     if resources.glucose - simulationDt * plant.rootLevel > 0 then 
         resources.glucose = resources.glucose - simulationDt * plant.rootLevel
-        resources.h2o = resources.h2o + simulationDt * 3.0 * plant.rootLevel
+        resources.h2o = resources.h2o + simulationDt * 3.2 * plant.rootLevel
     end
 
     if resources.h2o - simulationDt * leaves > 0 then 
-        resources.glucose = resources.glucose + simulationDt * 2.0 * leaves
+        resources.glucose = resources.glucose + simulationDt * 2.2 * leaves
         resources.h2o = resources.h2o - simulationDt * leaves
     end
 end
 
 
 resources = {
-    h2o = 100,
-    glucose = 100,
+    h2o = 200,
+    glucose = 200,
     minerals = 100
 }
 
@@ -93,6 +93,7 @@ function gameState.draw()
             clickCallback = function()
                 plant.strikeRoots()
                 plant.happyFace()
+                increaseCost("strikeRoots")
                 lush.play("ability.wav")
             end
         }
