@@ -11,6 +11,7 @@ require "face"
 require "ants"
 require "director"
 require "background"
+require "states.start"
 lush = require "lush"
 
 currentState = {time = 0} -- empty state, does nothing
@@ -29,11 +30,16 @@ function love.load()
     camera.load()
     level.generate()
 
+    if startState.load then startState.load() end
     if gameState.load then gameState.load() end
 
-    enterState(gameState)
+    --enterState(gameState)
+
+    enterState(startState)
 
     camera.setScale(1.0)
+
+    music = lush.play("NighttimeinSanFrancisco.mp3", {stream = true})
 end
 
 function love.update(dt)
@@ -57,6 +63,8 @@ end
 
 function love.keypressed(key, isrepeat)
     if currentState.keypressed then currentState.keypressed(key, isrepeat) end
+
+    if key == " " then music:pause() end
 end
 
 function love.keyreleased(key)

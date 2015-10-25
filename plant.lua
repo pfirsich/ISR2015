@@ -123,7 +123,7 @@ function smallPlant()
 end 
 
 function generatePlant()
-    local stemSegments = 7
+    local stemSegments = 9
     local totalAngle = 0
     local angleRange = 0.05 * 2 * math.pi
     for i = 1, stemSegments do 
@@ -143,7 +143,7 @@ function generatePlant()
         totalAngle = 0
         for j = 1, 3 - math.floor(2.0 * i / stemSegments) do
             local leaf = nil 
-            if love.math.random() < 0.5 then 
+            if love.math.random() < 1.1 then 
                 leaf = {}
                 local leafAngleRange = 0.05 * 2 * math.pi
                 leaf.angle = randf(-leafAngleRange, leafAngleRange) + 0.1 * 2 * math.pi * (i % 2 == 0 and 1 or -1)
@@ -151,6 +151,7 @@ function generatePlant()
                 leaf.angleOrigin = leaf.angle
                 leaf.scale = randf(0.2, 0.25)
                 leaf.velocity = 0
+                leaf.health = 1.0
             end 
             local angle = (j % 2 == 0 and 1 or -1) * math.pi * 2 * (0.1 - 0.025 * j) + randf(-angleRange, angleRange)
             branch[j] = {angle = angle, angleOrigin = angle, length = randf(100, 120), velocity = 0, leaf = leaf}
@@ -242,6 +243,7 @@ function plant.update(dt)
         plant.shakeAmp = plant.shakeAmp - dt*maxShakeAmp
     end
     plant.shakeAmp = clamp(plant.shakeAmp, 0, maxShakeAmp)
+    if currentState == startState then plant.shakeAmp = maxShakeAmp end
 
     for i = 1, #plant.stem do 
         local danceAngle = (i-1) / (#plant.stem-1) * 2 * math.pi
@@ -286,7 +288,6 @@ function plant.update(dt)
                         leaf.fallStart = currentState.time
                         leaf.fallAccell = randf(1.0, 1.2)
                         leaf.alpha = 1.0
-
                     end
                 end
             end 
@@ -482,19 +483,18 @@ function plant.draw()
     love.graphics.translate(faceOffset[plant.headImageIndex*2-1+0], faceOffset[plant.headImageIndex*2-1+1])
     love.graphics.scale(scale[plant.headImageIndex], scale[plant.headImageIndex])
     mouthX, mouthY = camera.worldToScreen(mouthX, mouthY)
-    local relX, relY = love.mouse.getX() - mouthX, love.mouse.getY() - mouthY
+    local relX, relY = love.mouse.getX() - mouthX + faceOffset[plant.headImageIndex*2-1+0], love.mouse.getY() - mouthY + faceOffset[plant.headImageIndex*2-1+1]
     local dist = math.sqrt(relX*relX + relY*relY)
-    local lastCloseFace = plant.closeToFace
-    plant.closeToFace = dist < 200
-    if plant.closeToFace and not lastCloseFace then 
-        plant.happyFace()
-    end 
-    if not plant.closeToFace and lastCloseFace then 
-        plant.defaultFace()
-    end 
-    if not plant.closeToFace then 
-        relX, relY = 0, 1
-    end 
+    if currentState == gameState then 
+        local lastCloseFace = plant.closeToFace
+        plant.closeToFace = dist < 200
+        if plant.closeToFace and not lastCloseFace then 
+            plant.happyFace()
+        end 
+        if not plant.closeToFace and lastCloseFace then 
+            plant.defaultFace()
+        end 
+    end
     drawMouth(plant.mouthOpen, plant.mouthScale, plant.blink, relX, relY)
     love.graphics.pop()
 
@@ -506,7 +506,9 @@ function plant.draw()
             {textWidget = textWidgets.list["openBud"], clickCallback = function()
                 plant.headImageIndex = plant.headImageIndex + 1
                 lush.play("levelup.wav")
-            end}
+                music:seek(12.441, "seconds")
+                music:play()
+            end, image = abilityIcons.bud}
         })
     else 
         for i = 1, #plant.stem do 
@@ -525,7 +527,7 @@ function plant.draw()
                         plant.happyFace()
                         plant.update(simulationDt)
                         lush.play("ability.wav")
-                    end}
+                    end, image = abilityIcons.branch}
                 })
             else 
                 for j = 1, #plant.branches[i] do 
@@ -547,7 +549,7 @@ function plant.draw()
                                 plant.happyFace()
                                 plant.update(simulationDt)
                                 lush.play("ability.wav")
-                            end}
+                            end, image = abilityIcons.leaf}
                         })
                     else -- level up + drop leaves
                         -- local sx, sy = camera.worldToScreen(plant.branches[i][j]._nextX, plant.branches[i][j]._nextY) 
@@ -580,9 +582,10 @@ function plant.draw()
                             thorn.angle = 2*math.pi*randf(-0.05, 0.05) + math.pi/2
                             thorn.flip = (t % 2 == 0) and 1 or -1
                             thorn.variance = love.math.random()
+                            lush.play("ability.wav")
                             plant.stem[i].thorns[t] = thorn
                         end 
-                    end}
+                    end, image = abilityIcons.thorns}
                 })
             end
         end

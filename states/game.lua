@@ -2,17 +2,25 @@ gameState = {time = 0}
 marker = {}
 
 function gameState.load()
+    background.load()
+    hudValueFont = love.graphics.newFont(30)
+end
+
+function gameState.onEnter()
+    plant.stem = {}
+    plant.branches = {}
+    love.mouse.setPosition(love.window.getWidth()/2, love.window.getHeight()/2)
+    camera.position = {0, 0}
+
     ants.clear()
     smallPlant()
     plant.appendToGraph()
     ants.testInit()
-    --plant.strikeRoots()
-    hudValueFont = love.graphics.newFont(30)
-    background.load()
-end
+    plant.strikeRoots()
 
-function gameState.onEnter()
-
+    plant.headImageIndex = 1
+    plant.rootCanvas:clear(0, 0, 0, 0)
+    plant.rootLevel = 0
 end
 
 function gameState.update()
@@ -42,18 +50,21 @@ function gameState.update()
         resources.glucose = resources.glucose + simulationDt * 2.0 * leaves
         resources.h2o = resources.h2o - simulationDt * leaves
     end
+
+    if music:tell("seconds") > 150.336 then 
+        music:seek(14.780 + music:tell("seconds") - 150.336, "seconds")
+    end
 end
 
 
 resources = {
-    h2o = 100,
-    glucose = 100,
-    minerals = 100
+    h2o = 1000,
+    glucose = 1000,
+    minerals = 1000
 }
 
-
-function gameState.draw()
-	-- Game World
+function drawGame()
+    -- Game World
     love.graphics.setColor(100,136,240)
     love.graphics.rectangle("fill", 0, 0, love.window.getWidth(), love.window.getHeight())
     love.graphics.setColor(255, 255, 255, 255)
@@ -83,7 +94,8 @@ function gameState.draw()
                     plant.targetShake = 0.0
                     plant.defaultFace()
                 end, 2.0)
-            end
+            end,
+            image = abilityIcons.shake,
         }
     end 
 
@@ -94,7 +106,8 @@ function gameState.draw()
                 plant.strikeRoots()
                 plant.happyFace()
                 lush.play("ability.wav")
-            end
+            end,
+            image = abilityIcons.root,
         }
     end 
 
@@ -111,6 +124,11 @@ function gameState.draw()
 
     -- Interface
     textWidgets.draw()
+end
+
+
+function gameState.draw()
+    drawGame()
 
     -- love.graphics.setLineWidth(2)
     -- love.graphics.setColor(255, 255, 255, 255)
@@ -142,11 +160,4 @@ function gameState.draw()
 end
 
 function gameState.keypressed(key)
-    if key == "u" then plant.screamFace() end 
-    if key == "i" then plant.sadFace() end 
-    if key == "o" then plant.defaultFace() end 
-    if key == "p" then plant.happyFace() end 
-    if key == "up" then plant.headImageIndex = clamp(plant.headImageIndex + 1, 1,3); lush.play("levelup.wav", {tags = {}}) end
-    if key == "down" then plant.headImageIndex = clamp(plant.headImageIndex - 1, 1,3) end
-    if key == "n" then plant.strikeRoots() end
 end 

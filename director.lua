@@ -1,3 +1,5 @@
+nextAntSpawn = math.huge
+
 function director(dt)
     local full = true
     for i = 2, #plant.stem do 
