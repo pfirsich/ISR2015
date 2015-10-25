@@ -27,11 +27,12 @@ function startState.update()
 	    music:seek(3.993 + music:tell("seconds") - 9.674, "seconds")
 	end              
 
-	if shoeFall then 
+	if shoeFall and not paused then 
 		shoeVel = shoeVel + 10000 * simulationDt
 		shoePos = shoePos + shoeVel * simulationDt
 	end                                              
-	if shoePos > -shoe:getHeight() * shoeScale + 200 then 
+	if shoePos > -shoe:getHeight() * shoeScale + 200 and not paused then 
+		paused = true
 		shoePos = -shoe:getHeight() * shoeScale + 200 
 		music:pause()
 		delay(function() enterState(gameState) end, 3.0)

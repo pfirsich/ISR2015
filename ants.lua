@@ -37,7 +37,14 @@ do
 	end
 
 
-	function ants.spawn()
+	function ants.spawn(delaySeconds, count)
+		count = count or 1
+		if count <= 0 then return end
+		if delaySeconds then
+			if #plant.stem < 4 then return end
+			delay(function() ants.spawn(); ants.spawn(delaySeconds, count-1) end, delaySeconds)
+			return
+		end
 		local rightSide = (love.math.random() > 0.5)
 		local ant
 		if not rightSide then
@@ -155,6 +162,12 @@ do
 							plant.screamFace()
 							-- Affect leaf
 							local leafGone = leaf.health < 0.0
+							-- Fall down
+							if leafGone then
+								ant.onGraph = false
+								ant.eating = false
+								ant.goingHome = true
+							end
 						end
 						-- Eating update
 						ant.eatingTimeRemaining = ant.eatingTimeRemaining - simulationDt
@@ -177,14 +190,24 @@ do
 					-- Check Ground
 					local gh = level.getGroundHeight(ant.x)
 					if ant.y > gh then
-						ant.y = gh
-						ant.onGraph = true
-						ant.fromPoint, ant.toPoint, ant.p = level.getGroundNode(ant.x)
-						ant.vy = 0.0
-						if ant.x > 0 then
-							ant.mirror = true
-						else
-							ant.mirror = false
+						local killed = ants.damage(ant, ant.vy*0.0005)
+						if not killed then
+							ant.y = gh
+							ant.onGraph = true
+							ant.fromPoint, ant.toPoint, ant.p = level.getGroundNode(ant.x)
+							-- randomly inverse
+							local inverse = false
+							if love.math.random() > 0.6 then
+								ant.fromPoint, ant.toPoint = ant.toPoint, ant.fromPoint
+								ant.p = 1.0 - ant.p
+								inverse = true
+							end
+							ant.vy = 0.0
+							if ant.x > 0 ~= inverse then
+								ant.mirror = true
+							else
+								ant.mirror = false
+							end
 						end
 					end
 				end
@@ -226,6 +249,7 @@ do
 		ant.life = 0.0
 		ant.onGraph = false
 		ant.damageIndicator = 0.0
+		if resources then resources.minerals = resources.minerals + 10 end
 	end
 
 	function ants.draw()

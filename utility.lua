@@ -1,7 +1,14 @@
+function filter(list, func)
+	local ret = {}
+	for i = 1, #list do
+		if func(list[i]) then ret[#ret+1] = list[i] end
+	end
+	return ret
+end
+
+
 function setResolution(w, h, flags) -- this is encapsulated, so if canvases are used later, they can be updated here!
-	if love.window.setMode(w, h, flags) then
-        reinitGFX()
-    else
+	if not love.window.setMode(w, h, flags) then
 		error(string.format("Resolution %dx%d could not be set successfully.", w, h))
 	end
 end

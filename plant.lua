@@ -522,6 +522,7 @@ function plant.draw()
                         branchSeg.targetLength = randf(100, 120)
                         branchSeg.creationTime = currentState.time
                         branchSeg.velocity = 0
+                        increaseCost("createBranch")
                         plant.branches[i] = {branchSeg}
                         plant.branches[i].count = 1
                         plant.happyFace()
@@ -545,6 +546,8 @@ function plant.draw()
                                 leaf.creationTime = currentState.time
                                 leaf.health = 1.0
                                 leaf.damageOffset = {love.math.random(), love.math.random()}
+                                increaseCost("createLeaf")
+                                ants.spawn(2)
                                 plant.branches[i][j].leaf = leaf
                                 plant.happyFace()
                                 plant.update(simulationDt)
@@ -583,6 +586,8 @@ function plant.draw()
                             thorn.flip = (t % 2 == 0) and 1 or -1
                             thorn.variance = love.math.random()
                             lush.play("ability.wav")
+                            increaseCost("growThorns")
+                            ants.spawn(2, 2)
                             plant.stem[i].thorns[t] = thorn
                         end 
                     end, image = abilityIcons.thorns}
@@ -667,7 +672,7 @@ function plant.updateGraph()
     -- Check for deleted plants
     local deleteList = {}
     for i = #moveGraph.nodes, level.rightEntryPoint.id+1, -1 do
-        if moveGraph.nodes[i].branchIndexIndex then
+        if moveGraph.nodes[i].branchIndex then
             if not plant.branches[moveGraph.nodes[i].stemIndex][moveGraph.nodes[i].branchIndex] then 
                 moveGraph.remove(i)
             end

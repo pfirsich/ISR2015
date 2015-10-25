@@ -31,7 +31,6 @@ function gameState.update()
     ants.testUpdate()
     -- Camera Movement
     camera.control(simulationDt, 1000)
-    knobs.update(simulationDt)
     director(simulationDt)
 
     local leaves = 0
@@ -43,11 +42,11 @@ function gameState.update()
 
     if resources.glucose - simulationDt * plant.rootLevel > 0 then 
         resources.glucose = resources.glucose - simulationDt * plant.rootLevel
-        resources.h2o = resources.h2o + simulationDt * 3.0 * plant.rootLevel
+        resources.h2o = resources.h2o + simulationDt * 5.2 * plant.rootLevel
     end
 
     if resources.h2o - simulationDt * leaves > 0 then 
-        resources.glucose = resources.glucose + simulationDt * 2.0 * leaves
+        resources.glucose = resources.glucose + simulationDt * 2.2 * leaves
         resources.h2o = resources.h2o - simulationDt * leaves
     end
 
@@ -58,13 +57,14 @@ end
 
 
 resources = {
-    h2o = 1000,
-    glucose = 1000,
-    minerals = 1000
+    h2o = 250,
+    glucose = 250,
+    minerals = 100
 }
 
 function drawGame()
-    -- Game World
+    knobs.update(simulationDt) -- sorry but this solves the problem
+	-- Game World
     love.graphics.setColor(100,136,240)
     love.graphics.rectangle("fill", 0, 0, love.window.getWidth(), love.window.getHeight())
     love.graphics.setColor(255, 255, 255, 255)
@@ -105,6 +105,7 @@ function drawGame()
             clickCallback = function()
                 plant.strikeRoots()
                 plant.happyFace()
+                increaseCost("strikeRoots")
                 lush.play("ability.wav")
             end,
             image = abilityIcons.root,
@@ -158,6 +159,3 @@ function gameState.draw()
     end 
     love.graphics.setFont(oldFont)
 end
-
-function gameState.keypressed(key)
-end 

@@ -7,11 +7,11 @@ function love.conf(t)
 	t.window.display = 1				-- Index of the monitor to show the window in (number)
 	t.window.highdpi = false			-- Enable high-dpi mode for the window on a Retina display (true/false).
 
-	t.identity = "ISR 2015"               -- The name of the save directory (string)
+	t.identity = "(PL)ANT LIFE"               -- The name of the save directory (string)
 	t.version = "0.9.2"                -- The LÖVE version this game was made for (string)
-	t.console = true                  -- Attach a console (boolean, Windows only)
+	t.console = false                  -- Attach a console (boolean, Windows only)
 
-	t.window.title = "ISR 2015"       -- The window title (string)
+	t.window.title = "(PL)ANT LIFE"       -- The window title (string)
 	t.window.icon = nil                -- Filepath to an image to use as the window's icon (string)
 
 	t.window.borderless = false        -- Remove all border visuals from the window (boolean)
