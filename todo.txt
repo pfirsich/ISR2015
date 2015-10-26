@@ -1,52 +1,21 @@
-Lukas:
-Ameise: Fress-Animation
-Pilze x 2 
-Das gleiche für Raupe
+Raupen
+Pilze
+giftige Blätter
+Spinnen
+Wetter
+Delta-Ressource-Number-Auflopperei
+    Vllt. auch an den Quellen (Ameisen, Blättern, usw.)
 
-Backgrounds (2 Layers)
-
-Das gleiche für Raupe, vllt. für Grasshopper
-Spinne: 
-    Kokon
-    Netz
-    Einmal von oben + Gehen
-    Einmal von der Seite + Gehn
-Icons für die Abilities
-Blätter mit Spinnen-Schild
-Regentropfen
-Schuh
-
--- 
-zweites Blatt
-
-Joel:
-Ressourcen
-Intro
-    Einfaden mit Musik und so
-Wurzeln
-Musik
-Sound
 Normal-Mapping, God-Rays
 Blätter streicheln
 
-Markus:
-
-
 Partikel: Schuh, Mampfen, Levelup, neue Dinger
 
-----------------
-zahlen aufploppen
+Knob von Root und first stem segment intersect
 
-
-Wetter (1h)
-Raupe (wenn Lukas es packt) (1h)
-Pilze (1h)
-Spinne (1,5)
-Giftige Blätter
-
------------------
-
-augen fokussieren nicht recht
-preise steigen zu schnell
-stacheln ganzen unten
-faden von text und knobs ist zu langsam
+TextWidgets (Hintergrund dunkler/weniger transparent)
+    Zu custom Schriftart umsteigen
+    
+    
+Mehrere Levels mit unterschiedlichen Fähigkeiten
+Vielleicht auch versch. Levels mit versch. Wetter und vllt. Tageszeiten. Alles was man drehen kann, drehen halt.
