@@ -72,15 +72,10 @@ function love.draw()
 end
 
 function love.keypressed(key, isrepeat)
-    if key == " " then 
-        accum = 0
-    end 
-
     if currentState.keypressed then currentState.keypressed(key, isrepeat) end
 end
 
 function love.keyreleased(key)
-    print(accum); accum = nil
     if currentState.keyreleased then currentState.keyreleased(key) end
 end
 
