@@ -40,8 +40,9 @@ function startState.update()
 end
 
 function startState.keypressed(key)
-    if not played then 
-        played = true
+    if not pressed then 
+    	lush.play("hover.wav")
+        pressed = true
         lush.play("shoe.wav")
         delay(function() shoeFall = true end, 2.0)
     end
@@ -59,9 +60,17 @@ function startState.draw()
 		love.graphics.draw(titel, love.window.getWidth()/2 - titel:getWidth()/2, love.window.getHeight()/2 - titel:getHeight()/2)
 		local t = "This game was developed as part of Indie Speed Run 2015 (www.indiespeedrun.com)"
 		shadowText(t, love.window.getWidth()/2 - bigFont:getWidth(t)/2, 5)
+
 		local start = "Press any key to start"
-		if math.sin(currentState.time*5.0) > 0 then 
-			shadowText(start, love.window.getWidth()/2 - bigFont:getWidth(start)/2, love.window.getHeight() - bigFont:getHeight()*4)
+		if math.sin(currentState.time*5.0) > 0 or pressed then 
+			if pressed then 
+				pressKeyFade = clamp((pressKeyFade or 0) + drawDt * 1.0, 0, 1)
+			else 
+				pressKeyFade = 0
+			end 
+			local w, h = bigFont:getWidth(start), bigFont:getHeight()
+			local s = lerp(1.0, 2.0, math.sqrt(pressKeyFade))
+			shadowText(start, love.window.getWidth()/2 - w/2 - w/2*(s-1), love.window.getHeight() - h*2 - h/2*(s-1), 255 - pressKeyFade * 255, s)
 		end
 
 		love.graphics.setFont(smallFont)
@@ -78,9 +87,9 @@ function startState.draw()
 	love.graphics.setFont(curFont)
 end
 
-function shadowText(t, x, y)
-	love.graphics.setColor(0, 0, 0, 255)
-	love.graphics.print(t, x+2, y+2)
-	love.graphics.setColor(255, 255, 255, 255)
-	love.graphics.print(t, x, y)
+function shadowText(t, x, y, alpha, scale)
+	love.graphics.setColor(0, 0, 0, alpha or 255)
+	love.graphics.print(t, x+2, y+2, 0, scale)
+	love.graphics.setColor(255, 255, 255, alpha or 255)
+	love.graphics.print(t, x, y, 0, scale)
 end
