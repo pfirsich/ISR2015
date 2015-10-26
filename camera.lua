@@ -70,7 +70,7 @@ do
 	end
 
 	function camera.move(dx, dy)
-		local smoothing = 0.96
+		local smoothing = 0.85
 		local inversed = 1.0-smoothing
 		camera.velocity[1] = smoothing*camera.velocity[1] + inversed*dx
 		camera.velocity[2] = smoothing*camera.velocity[2] + inversed*dy

@@ -84,7 +84,7 @@ function love.run()
     end
 
     simulationTime = love.timer.getTime()
-    simulationDt = 1.0/120.0
+    simulationDt = 1.0/40.0
 
     if love.load then love.load(arg) end
 
