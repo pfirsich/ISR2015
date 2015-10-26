@@ -25,13 +25,13 @@ do
 
 	function knobs.update(dt)
 		knobs.dt = dt
-		knobs.time = love.timer.getTime()
 		knobs.mouse.x, knobs.mouse.y = love.mouse.getPosition()
 		knobs.mouse.leftclick = knobs.stateChange(knobs.mouse.leftclick, love.mouse.isDown("l"))
 	end
 
 
 	function knobs.draw(id, x, y, content)
+		knobs.time = love.timer.getTime()
 		if currentState == gameState then 
 			knobs.assureExistence(id)
 			knobs.prepareElements(content)
@@ -58,9 +58,9 @@ do
 			end
 			-- update size
 			if self.hovered then
-				if self.zoomedIn < 1 then self.zoomedIn = clamp(self.zoomedIn + simulationDt*3.0, 0, 1) end
+				self.zoomedIn = clamp(self.zoomedIn + drawDt*6.0, 0, 1)
 			else
-				if self.zoomedIn > 0 then self.zoomedIn = clamp(self.zoomedIn - simulationDt*3.0, 0, 1) end
+				self.zoomedIn = clamp(self.zoomedIn - drawDt*3.0, 0, 1)
 			end
 		
 			-- Draw surrounding circle
@@ -69,8 +69,8 @@ do
 			love.graphics.setColor(255, 255, 0, 255)
 			if not used then 
 				local scale = size / (haloImage:getWidth()/2 - 50)
-				love.graphics.draw(haloImage, x, y,  currentState.time, scale, scale, haloImage:getWidth()/2, haloImage:getHeight()/2)
-				love.graphics.draw(haloImage, x, y, -currentState.time, scale, scale, haloImage:getWidth()/2, haloImage:getHeight()/2)
+				love.graphics.draw(haloImage, x, y,  knobs.time, scale, scale, haloImage:getWidth()/2, haloImage:getHeight()/2)
+				love.graphics.draw(haloImage, x, y, -knobs.time, scale, scale, haloImage:getWidth()/2, haloImage:getHeight()/2)
 			end 
 			love.graphics.setColor(255, 255, 255, 255)
 			love.graphics.circle("line", x, y, size, 32)
@@ -95,8 +95,8 @@ do
 					-- Draw actual object
 					if not used then 
 						local scale = rad*0.9 / (haloImage:getWidth()/2 - 50)
-						love.graphics.draw(haloImage, cx, cy,  currentState.time, scale, scale, haloImage:getWidth()/2, haloImage:getHeight()/2)
-						love.graphics.draw(haloImage, cx, cy, -currentState.time, scale, scale, haloImage:getWidth()/2, haloImage:getHeight()/2)
+						love.graphics.draw(haloImage, cx, cy,  knobs.time, scale, scale, haloImage:getWidth()/2, haloImage:getHeight()/2)
+						love.graphics.draw(haloImage, cx, cy, -knobs.time, scale, scale, haloImage:getWidth()/2, haloImage:getHeight()/2)
 					end
 					if content[i].image then
 						love.graphics.draw(content[i].image, cx, cy, 0.0, sizeScale*0.9, sizeScale*0.9, content[i].image:getWidth()/2, content[i].image:getHeight()/2)
@@ -107,7 +107,7 @@ do
 					-- Hovering and interaction
 					if knobs.mouseInSphere(cx, cy, rad) then
 						if p >= 1 then
-							content[i].highlight = clamp(content[i].highlight + simulationDt*3.5, 0, 1)
+							content[i].highlight = clamp(content[i].highlight + drawDt*3.5, 0, 1)
 							if content[i].textWidget then 
 								textWidgets.show(content[i].textWidget, x + dis*math.sin(baseAngle), y + dis*math.cos(baseAngle)-150) 
 							end
@@ -132,7 +132,7 @@ do
 						 end
 						if knobs.mouse.leftclick == 2 then knobs.mouse.leftclick = 1 end -- hax
 					else
-						content[i].highlight = clamp(content[i].highlight - simulationDt*1.6, 0, 1)
+						content[i].highlight = clamp(content[i].highlight - drawDt*1.6, 0, 1)
 					end
 				end
 			end

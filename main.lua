@@ -59,7 +59,11 @@ function love.textinput(text)
 end
 
 function love.draw()
-    drawDt = love.timer.getDelta()
+    local time = love.timer.getTime()
+    drawDt = time - (lastDrawTime or time)
+    lastDrawTime = time 
+    if accum then accum = accum + drawDt end
+
     if currentState.draw then currentState.draw() end
 
     if love.keyboard.isDown("q") then
@@ -68,12 +72,15 @@ function love.draw()
 end
 
 function love.keypressed(key, isrepeat)
-    if currentState.keypressed then currentState.keypressed(key, isrepeat) end
+    if key == " " then 
+        accum = 0
+    end 
 
-    if key == " " then music:pause() end
+    if currentState.keypressed then currentState.keypressed(key, isrepeat) end
 end
 
 function love.keyreleased(key)
+    print(accum); accum = nil
     if currentState.keyreleased then currentState.keyreleased(key) end
 end
 
