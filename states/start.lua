@@ -35,7 +35,8 @@ function startState.update()
 		paused = true
 		shoePos = -shoe:getHeight() * shoeScale + 200 
 		music:pause()
-		delay(function() enterState(gameState) end, 3.0)
+		delay(function() fadeOutStartScreen = true end, 3.0)
+		delay(function() enterState(gameState) end, 5.0)
 	end                                                     
 end
 
@@ -85,6 +86,12 @@ function startState.draw()
 		end 
 	end
 	love.graphics.setFont(curFont)
+
+	if fadeOutStartScreen then 
+		fadeOutAlpha = (fadeOutAlpha or 0) + 255 * drawDt * 0.5
+		love.graphics.setColor(0, 0, 0, fadeOutAlpha)
+		love.graphics.rectangle("fill", 0, 0, love.window.getWidth(), love.window.getHeight())
+	end 
 end
 
 function shadowText(t, x, y, alpha, scale)
