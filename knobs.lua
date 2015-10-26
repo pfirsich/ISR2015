@@ -34,7 +34,7 @@ do
 		knobs.time = love.timer.getTime()
 		if currentState == gameState then 
 			knobs.assureExistence(id)
-			knobs.prepareElements(content)
+			knobs.prepareElements(id, content)
 
 			-- check if unused elements
 			local used = true
@@ -89,7 +89,7 @@ do
 					local angle = baseAngle + timeOff
 					local cx = x + dis*math.sin(angle)
 					local cy = y + dis*math.cos(angle)
-					local alpha = 255*p*(0.5 + 0.5*content[i].highlight)
+					local alpha = 255*p*(0.5 + 0.5*self.highlight[i])
 					love.graphics.setColor(255,255,255,alpha)
 
 					-- Draw actual object
@@ -106,12 +106,11 @@ do
 
 					-- Hovering and interaction
 					if knobs.mouseInSphere(cx, cy, rad) then
-						if p >= 1 then
-							content[i].highlight = clamp(content[i].highlight + drawDt*3.5, 0, 1)
-							if content[i].textWidget then 
-								textWidgets.show(content[i].textWidget, x + dis*math.sin(baseAngle), y + dis*math.cos(baseAngle)-150) 
-							end
+						self.highlight[i] = clamp(self.highlight[i] + drawDt*4.0, 0, 1)
+						if content[i].textWidget then 
+							textWidgets.show(content[i].textWidget, x + dis*math.sin(baseAngle), y + dis*math.cos(baseAngle)-150) 
 						end
+
 						if knobs.mouse.leftclick == 2 and content[i].clickCallback then 
 							local valid = true
 							for j, k in ipairs({"h2o", "glucose", "minerals"}) do 
@@ -132,7 +131,7 @@ do
 						 end
 						if knobs.mouse.leftclick == 2 then knobs.mouse.leftclick = 1 end -- hax
 					else
-						content[i].highlight = clamp(content[i].highlight - drawDt*1.6, 0, 1)
+						self.highlight[i] = clamp(self.highlight[i] - drawDt*1.0, 0, 1)
 					end
 				end
 			end
@@ -146,10 +145,10 @@ do
 		end
 	end
 
-	function knobs.prepareElements(list)
+	function knobs.prepareElements(id, list)
+		if knobs.list[id].highlight == nil then knobs.list[id].highlight = {} end
 		for i = 1,#list do
-			local e = list[i]
-			if not e.highlight then e.highlight = 0.0 end
+			if knobs.list[id].highlight[i] == nil then knobs.list[id].highlight[i] = 0 end
 		end
 	end
 

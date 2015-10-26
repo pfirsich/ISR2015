@@ -44,6 +44,7 @@ do
 			v.x = 0
 			v.y = 0
 			v.visible = 0.0
+			v.lastVisible = 0.0
 		end
 	end
 
@@ -66,7 +67,7 @@ do
 	function textWidgets.show(widget, x, y)
 		widget.x = x
 		widget.y = y
-		widget.visible = clamp(widget.visible + drawDt*0.4, 0, 1.2)
+		widget.visible = clamp(widget.visible + drawDt*2.0, 0, 1.2)
 	end
 
 	function textWidgets.draw()
@@ -109,8 +110,9 @@ do
 					end
 				end
 				-- Hide it
-				widget.visible = clamp(widget.visible - drawDt*0.2, 0, 1.2)
+				if widget.lastVisible == widget.visible then widget.visible = clamp(widget.visible - drawDt*2.0, 0, 1.2) end
 			end
+			widget.lastVisible = widget.visible
 		end
 	end
 
