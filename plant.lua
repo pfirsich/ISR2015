@@ -483,7 +483,7 @@ function plant.draw()
     love.graphics.translate(faceOffset[plant.headImageIndex*2-1+0], faceOffset[plant.headImageIndex*2-1+1])
     love.graphics.scale(scale[plant.headImageIndex], scale[plant.headImageIndex])
     mouthX, mouthY = camera.worldToScreen(mouthX, mouthY)
-    local relX, relY = love.mouse.getX() - mouthX + faceOffset[plant.headImageIndex*2-1+0], love.mouse.getY() - mouthY + faceOffset[plant.headImageIndex*2-1+1]
+    local relX, relY = love.mouse.getX() - mouthX - faceOffset[plant.headImageIndex*2-1+0], love.mouse.getY() - mouthY - faceOffset[plant.headImageIndex*2-1+1]
     local dist = math.sqrt(relX*relX + relY*relY)
     if currentState == gameState then 
         local lastCloseFace = plant.closeToFace
@@ -585,11 +585,11 @@ function plant.draw()
                             thorn.angle = 2*math.pi*randf(-0.05, 0.05) + math.pi/2
                             thorn.flip = (t % 2 == 0) and 1 or -1
                             thorn.variance = love.math.random()
-                            lush.play("ability.wav")
-                            increaseCost("growThorns")
-                            ants.spawn(2, 2)
                             plant.stem[i].thorns[t] = thorn
                         end 
+                        lush.play("ability.wav")
+                        ants.spawn(2, 4)
+                        increaseCost("growThorns")
                     end, image = abilityIcons.thorns}
                 })
             end
@@ -606,6 +606,7 @@ end
 
 function plant.appendToGraph()
     plant.update(0)
+    level.plantAttachmentNode.stemIndex = 1
     -- Stem
     local prev = level.plantAttachmentNode
     for i = 2, #plant.stem do

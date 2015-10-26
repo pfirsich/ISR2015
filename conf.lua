@@ -9,7 +9,7 @@ function love.conf(t)
 
 	t.identity = "(PL)ANT LIFE"               -- The name of the save directory (string)
 	t.version = "0.9.2"                -- The LÖVE version this game was made for (string)
-	t.console = false                  -- Attach a console (boolean, Windows only)
+	t.console = true                  -- Attach a console (boolean, Windows only)
 
 	t.window.title = "(PL)ANT LIFE"       -- The window title (string)
 	t.window.icon = nil                -- Filepath to an image to use as the window's icon (string)

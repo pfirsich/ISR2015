@@ -121,7 +121,7 @@ do
 						end 
 					end 
 					-- Damaged by Thorns?
-					if ant.fromPoint.stemIndex and not ant.fromPoint.branchIndex then
+					if ant.fromPoint.stemIndex and not ant.fromPoint.branchIndex and ant.toPoint.stemIndex and not ant.toPoint.branchIndex then
 						-- ant on stem 
 						local index = ((ant.vy < 0) and ant.fromPoint.stemIndex or ant.toPoint.stemIndex)
 						if plant.stem[index] and plant.stem[index].thorns then
@@ -130,6 +130,12 @@ do
 							local killed = ants.damage(ant, simulationDt*0.3)
 							if killed then return end
 						end
+					end
+					-- Inertia lower on plant
+					if ant.fromPoint.tp == "ground" or ant.toPoint.tp == "ground" then
+						ant.inertia = 0.94*ant.inertia + 0.06*0.97
+					else
+						ant.inertia = 0.98*ant.inertia + 0.02*0.8
 					end
 					-- TODO leaf noch!
 					-- eating vs movement
@@ -141,7 +147,7 @@ do
 						local angle_dif = (target_angle - ant.angle)/(2*math.pi)
 						angle_dif = (angle_dif - math.floor(angle_dif))*(2*math.pi)
 						if angle_dif > math.pi then angle_dif = angle_dif - 2*math.pi end
-						ant.angle = 0.92*ant.angle + 0.08*(ant.angle + angle_dif)
+						ant.angle = 0.8*ant.angle + 0.2*(ant.angle + angle_dif)
 						-- Moved outside?
 						if ant.toPoint == level.leftEntryPoint or ant.toPoint == level.rightEntryPoint then
 							ants.deleteAnt(ant)
@@ -267,10 +273,10 @@ do
 			-- figure out which image to use
 			local img
 			if ant.eating then
-				img = ants.eatImages[1 + (math.floor(currentState.time*40) % 24)]
+				img = ants.eatImages[1 + (math.floor(currentState.time*40*ant.speed) % 24)]
 			else
 				if ant.onGraph then
-					img = ants.walkImages[1 + (math.floor(currentState.time*40) % 24)]
+					img = ants.walkImages[1 + (math.floor(currentState.time*40*ant.speed) % 24)]
 				else
 					-- Falling
 					img = ants.walkImages[1]

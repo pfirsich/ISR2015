@@ -63,7 +63,7 @@ resources = {
 }
 
 function drawGame()
-    knobs.update(simulationDt) -- sorry but this solves the problem
+    knobs.update(drawDt) -- sorry but this solves the problem
 	-- Game World
     love.graphics.setColor(100,136,240)
     love.graphics.rectangle("fill", 0, 0, love.window.getWidth(), love.window.getHeight())
@@ -158,4 +158,14 @@ function gameState.draw()
         love.graphics.print(tostring(math.floor(resources[kind])), x + iconOffset + iconSizeX + 10, iconSizeY / 2 - height / 2)
     end 
     love.graphics.setFont(oldFont)
+end
+
+
+
+function gameState.keypressed(key)
+    if key == "," then
+        for key,value in pairs(resources) do
+            resources[key] = resources[key] + 100
+        end
+    end
 end
