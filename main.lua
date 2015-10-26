@@ -41,7 +41,7 @@ function love.load()
 
     music = lush.play("NighttimeinSanFrancisco.mp3", {stream = true})
 
-    --autoFullscreen()
+    autoFullscreen()
 end
 
 function love.update(dt)
