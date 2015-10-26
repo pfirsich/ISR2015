@@ -158,6 +158,12 @@ function gameState.draw()
         love.graphics.print(tostring(math.floor(resources[kind])), x + iconOffset + iconSizeX + 10, iconSizeY / 2 - height / 2)
     end 
     love.graphics.setFont(oldFont)
+
+    fadeInAlpha = (fadeInAlpha or 255) - 255 * drawDt * 1.0
+    if fadeInAlpha > 0 then 
+        love.graphics.setColor(0, 0, 0, fadeInAlpha)
+        love.graphics.rectangle("fill", 0, 0, love.window.getWidth(), love.window.getHeight())
+    end
 end
 
 
