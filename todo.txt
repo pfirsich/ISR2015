@@ -19,3 +19,9 @@ TextWidgets (Hintergrund dunkler/weniger transparent)
     
 Mehrere Levels mit unterschiedlichen Fähigkeiten
 Vielleicht auch versch. Levels mit versch. Wetter und vllt. Tageszeiten. Alles was man drehen kann, drehen halt.
+
+Anzeigen, dass man nicht genügend Ressourcen für bestimmte abilities hat
+
+Startmineralien erhöhen, sodass man 2 Thorns + Schütteln aus versehen machen kann.
+
+Entscheidungsfindung der Ameisen überarbeiten
