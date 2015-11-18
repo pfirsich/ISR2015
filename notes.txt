@@ -1,5 +1,12 @@
 (Pl vs. 1) * ants
 
+Links:
+    https://www.indiespeedrun.com/2015wp/game/?game=652770
+    https://twitter.com/Jupiter_Hadley/status/666835082364198913
+    https://www.youtube.com/watch?v=CZnZzfMa0-Y
+    https://www.youtube.com/watch?v=TQ_T2QBYmgI&feature=youtu.be
+    https://www.youtube.com/watch?v=E2fG2h0bYAc&feature=youtu.be
+
 Plant als Hauptcharakter
     mit Gesicht + Gesichtsausdrücken und Sinus-Rotation
     Prozedurale Animation im Wind
